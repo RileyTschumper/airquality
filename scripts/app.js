@@ -7,13 +7,16 @@ app = new Vue({
     data: {
         map: null,
         tileLayer: null,
+        latitude: 44.94,
+        longitude: -93.18,
+        zoom: 11,
     },
     mounted() { /* Code to run when app is mounted */
         this.initMap();
     },
     methods: { /* Any app-specific functions go here */
         initMap() {
-            this.map = L.map('map').setView([38.63, -90.23], 12);
+            this.map = L.map('map').setView([this.latitude, this.longitude], this.zoom);
             this.tileLayer = L.tileLayer(
                 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
                 {
@@ -22,6 +25,9 @@ app = new Vue({
                 }
               );
               this.tileLayer.addTo(this.map);
+        },
+        updateMap(){
+            this.map.setView([this.latitude, this.longitude], this.zoom);
         },
     },
   });

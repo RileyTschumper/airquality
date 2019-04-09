@@ -20,6 +20,8 @@
   <body onload="Init()">
     <div id="app">
       <div id="map" class="map"></div>
+      <input id="search" type="text" v-model="latitude" @change="updateMap()">Latitude</input>
+      <input id="search" type="text" v-model="longitude" @change="updateMap()">Longitude</input>
     </div>
   </body>
 </html>
