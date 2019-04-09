@@ -13,6 +13,7 @@ app = new Vue({
     },
     mounted() { /* Code to run when app is mounted */
         this.initMap();
+        //this.mapListener();
     },
     methods: { /* Any app-specific functions go here */
         initMap() {
@@ -25,10 +26,19 @@ app = new Vue({
                 }
               );
               this.tileLayer.addTo(this.map);
+
+            this.map.on("move", function(e){
+                updateCenter();
+            });
         },
         updateMap(){
             this.map.setView([this.latitude, this.longitude], this.zoom);
         },
     },
   });
+
+  function updateCenter(){
+      app.latitude = app.map.getCenter().lat;
+      app.longitude = app.map.getCenter().lng;
+  }
 }
