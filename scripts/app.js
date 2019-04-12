@@ -10,7 +10,8 @@ app = new Vue({
           tileLayer: null,
           latitude: 44.94,
           longitude: -93.18,
-          zoom: 11
+          zoom: 11,
+          markers: []
         },
         map2:{
           map: null,
@@ -21,7 +22,9 @@ app = new Vue({
         }
     },
     mounted() { /* Code to run when app is mounted */
-        this.initMap();
+      getAQ(this.map1.latitude,this.map1.longitude,this.map1);
+      getAQ(this.map2.latitude,this.map2.longitude,this.map2);
+      this.initMap();
         //this.mapListener();
     },
     methods: { /* Any app-specific functions go here */
@@ -36,7 +39,20 @@ app = new Vue({
                 }
               );
               this.map1.tileLayer.addTo(this.map1.map);
+/* Adding markers to the map. I don't how to do ajax properly
+              if(this.map1.markers.length > 0){
+                for(var i = 0; i < this.map1.markers.length; i++)
+                {
+                  console.log(this.map1.markers[i].coordinates.latitude);
+                  console.log(this.map1.markers[i].coordinates.longitude);
+                  L.marker([this.map1.markers[i].coordinates.latitude,this.map1.markers[i].coordinates.longitude]).addTo(this.map1.map);
+                }
 
+              }
+              else {
+                console.log("Markers did not make it in time");
+              }
+*/
             this.map1.map.on("move", function(e){
                 updateCenterMap1();
             });
@@ -62,8 +78,9 @@ app = new Vue({
         updateMap2(){
             this.map2.map.setView([this.map2.latitude, this.map2.longitute], this.map2.zoom);
         }
-    },
-  });
+
+    }//methods,
+  });//VUE app
 
   function updateCenterMap1(){
       app.map1.latitude = app.map1.map.getCenter().lat;
@@ -73,4 +90,15 @@ app = new Vue({
     app.map2.latitude = app.map2.map.getCenter().lat;
     app.map2.longitude = app.map2.map.getCenter().lng;
   }
-}
+}//Init()
+
+function getAQ(latitude,longitude,map){
+  var date = "2019-04-10"
+  var parameter = "o3";
+  var address = "https://api.openaq.org/v1/measurements?parameter="+parameter+"&coordinates="+latitude+","+longitude+"&radius=10000&data_from="+date+"&limit=10"
+  $.ajax({url: address, success: function(response){
+    map.markers = response.results;
+//    console.log(app.map1.markers);
+  }
+});
+}//getAQ
