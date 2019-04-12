@@ -18,7 +18,8 @@ app = new Vue({
           titleLayer:null,
           latitude: 39.90,
           longitude: 116.41,
-          zoom: 11
+          zoom: 11,
+          markers: []
         }
     },
     mounted() { /* Code to run when app is mounted */
@@ -39,20 +40,7 @@ app = new Vue({
                 }
               );
               this.map1.tileLayer.addTo(this.map1.map);
-/* Adding markers to the map. I don't how to do ajax properly
-              if(this.map1.markers.length > 0){
-                for(var i = 0; i < this.map1.markers.length; i++)
-                {
-                  console.log(this.map1.markers[i].coordinates.latitude);
-                  console.log(this.map1.markers[i].coordinates.longitude);
-                  L.marker([this.map1.markers[i].coordinates.latitude,this.map1.markers[i].coordinates.longitude]).addTo(this.map1.map);
-                }
 
-              }
-              else {
-                console.log("Markers did not make it in time");
-              }
-*/
             this.map1.map.on("move", function(e){
                 updateCenterMap1();
             });
@@ -92,12 +80,28 @@ app = new Vue({
   }
 }//Init()
 
-function getAQ(latitude,longitude,map){
+//Adding markers to the map. I don't how to do ajax properly
+///*
+function addMarkers(event){
+    if(app.map1.markers.length > 0){
+      for(var i = 0; i < app.map1.markers.length; i++){
+        console.log(app.map1.markers[i].coordinates.latitude);
+        console.log(app.map1.markers[i].coordinates.longitude);
+        L.marker([app.map1.markers[i].coordinates.latitude,app.map1.markers[i].coordinates.longitude]).addTo(app.map1.map);
+      }
+    }
+    else {
+      console.log("Markers did not make it in time");
+    }
+}
+          //*/
+
+function getAQ(latitude,longitude,mapview){
   var date = "2019-04-10"
   var parameter = "o3";
   var address = "https://api.openaq.org/v1/measurements?parameter="+parameter+"&coordinates="+latitude+","+longitude+"&radius=10000&data_from="+date+"&limit=10"
   $.ajax({url: address, success: function(response){
-    map.markers = response.results;
+    mapview.markers = response.results;
 //    console.log(app.map1.markers);
   }
 });
