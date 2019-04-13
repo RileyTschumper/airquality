@@ -74,15 +74,17 @@ app = new Vue({
     }//methods,
   });//VUE app
 
-  function updateCenterMap1(){
-      app.map1.latitude = app.map1.map.getCenter().lat;
-      app.map1.longitude = app.map1.map.getCenter().lng;
-  }
-  function updateCenterMap2(){
-    app.map2.latitude = app.map2.map.getCenter().lat;
-    app.map2.longitude = app.map2.map.getCenter().lng;
-  }
 }//Init()
+
+function updateCenterMap1(){
+  app.map1.latitude = app.map1.map.getCenter().lat;
+  app.map1.longitude = app.map1.map.getCenter().lng;
+}
+
+function updateCenterMap2(){
+app.map2.latitude = app.map2.map.getCenter().lat;
+app.map2.longitude = app.map2.map.getCenter().lng;
+}
 
 function updateMarkers1(){
   //gets the date 30 prior to today
@@ -90,17 +92,19 @@ function updateMarkers1(){
   var month = dateObj.getUTCMonth() + 1; //months from 1-12
   var day = dateObj.getUTCDate();
   var year = dateObj.getUTCFullYear();
-
   var date = year + "-" + month + "-" + day;
 
+  //gets the radius based on the current map view
   var radius = calculateRadius(app.map1.map);
 
+  //gets the lat and lng at center of the map
   var latitude = app.map1.map.getCenter().lat;
   var longitude = app.map1.map.getCenter().lng;
 
   getData(latitude, longitude, radius, date, app.map1.map);
 }
 
+//This isn't proper Haversine, but it works...kinda. Radius is a bit large I think
 function calculateRadius(map){
   var centerLat = app.map1.map.getCenter().lat;
   var centerLng = app.map1.map.getCenter().lng;
@@ -115,47 +119,35 @@ function calculateRadius(map){
   return radius;
 }
 
-//Adding markers to the map. I don't how to do ajax properly
-///*
+//Adding markers to the map. 
 function addMarkers(data, map){
-    console.log("JSON data recieved");
-    //console.log(data);
+    console.log("JSON data recieved");;
     var results = data.results;
     console.log(results);
 
     var currTotal = currTotal + results[0].value;;
     var numReadings = 1;
+    //Loops through all readings
     for(var i = 1; i < results.length; i++){
+      //if location and parameter match, keep a running total to calculate an average
+      //This works because we fetched data in order by location and parameter
       if((results[i].location == results[i-1].location) && (results[i].parameter == results[i-1].parameter)){
         currTotal = currTotal + results[i].value;
         numReadings = numReadings + 1;
       }
+      //if location or parameter are no longer the same, calculate average and place down marker
       else{
         var lat = results[i-1].coordinates.latitude;
         var lng = results[i-1].coordinates.longitude;
         var average = currTotal/numReadings;
-        L.marker([lat,lng]).addTo(map).bindPopup("Location: " + results[i-1].location + "\n" + results[i-1].parameter + ": " + average);
-        //console.log("in else and i is " + i);
+        L.marker([lat,lng]).addTo(map).bindPopup("Location: " + results[i-1].location + results[i-1].parameter + ": " + average);
         numReadings = 0;
         currTotal = 0;
       }
     }
-
-   // for()
-    /*
-    if(app.map1.markers.length > 0){
-      for(var i = 0; i < app.map1.markers.length; i++){
-        console.log(app.map1.markers[i].coordinates.latitude);
-        console.log(app.map1.markers[i].coordinates.longitude);
-        L.marker([app.map1.markers[i].coordinates.latitude,app.map1.markers[i].coordinates.longitude]).addTo(app.map1.map);
-      }
-    }
-    else {
-      console.log("Markers did not make it in time");
-    }
-    */
 }
 
+//HTTP Request to Open AQ API
 var getData = function(latitude, longitude, radius, date, map) {
 
   console.log("getData lat " + latitude);
@@ -163,22 +155,26 @@ var getData = function(latitude, longitude, radius, date, map) {
   console.log("getData radius " + radius);
   console.log("getData date " + date);
 
-
   var req = new XMLHttpRequest();
-
 
   req.onreadystatechange = function() {
     if (req.readyState == 4 && req.status == 200) {
+      //call the addMarkers function with JSON data
       addMarkers(JSON.parse(req.response),map);
     }
   };
+
+  //Orders data by location and parameter, this makes it easier to average the values
   var order = "&order_by[]=location&order_by[]=parameter";
+  //Fetch data for all parameters
   var parameter = "parameter[]=pm25&parameter[]=pm10&parameter[]=so2&parameter[]=no2&parameter[]=o3&parameter[]=co&parameter[]=bc";
+
   var url = "https://api.openaq.org/v1/measurements?" + parameter + "&coordinates="+latitude+","+longitude+"&radius="+radius+"&date_from="+date+order+"&limit=10000";
   req.open("GET", url, true);
   req.send();
 };
 
+/*
 function getAQ(latitude,longitude,mapview){
 
   //gets the date 30 prior to today
@@ -197,3 +193,4 @@ function getAQ(latitude,longitude,mapview){
   }
 });
 }//getAQ
+*/
