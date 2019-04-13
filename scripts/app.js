@@ -23,8 +23,8 @@ app = new Vue({
         }
     },
     mounted() { /* Code to run when app is mounted */
-      getAQ(this.map1.latitude,this.map1.longitude,this.map1);
-      getAQ(this.map2.latitude,this.map2.longitude,this.map2);
+      //getAQ(this.map1.latitude,this.map1.longitude,this.map1);
+      //getAQ(this.map2.latitude,this.map2.longitude,this.map2);
       this.initMap();
         //this.mapListener();
     },
@@ -43,6 +43,10 @@ app = new Vue({
 
             this.map1.map.on("move", function(e){
                 updateCenterMap1();
+            });
+
+            this.map1.map.on("moveend", function(e){
+              updateMarkers1();
             });
 
             //Initializing Second map
@@ -80,9 +84,65 @@ app = new Vue({
   }
 }//Init()
 
+function updateMarkers1(){
+  //gets the date 30 prior to today
+	var dateObj = new Date(new Date().setDate(new Date().getDate() - 30));
+  var month = dateObj.getUTCMonth() + 1; //months from 1-12
+  var day = dateObj.getUTCDate();
+  var year = dateObj.getUTCFullYear();
+
+  var date = year + "-" + month + "-" + day;
+
+  var radius = calculateRadius(app.map1.map);
+
+  var latitude = app.map1.map.getCenter().lat;
+  var longitude = app.map1.map.getCenter().lng;
+
+  getData(latitude, longitude, radius, date, app.map1.map);
+}
+
+function calculateRadius(map){
+  var centerLat = app.map1.map.getCenter().lat;
+  var centerLng = app.map1.map.getCenter().lng;
+  var northeastLat = app.map1.map.getBounds().getNorthEast().lat;
+  var northeastLng = app.map1.map.getBounds().getNorthEast().lng;
+
+  var y = 111111*Math.abs(northeastLat - centerLat);
+  var x = 111111*Math.abs(northeastLng - centerLng);
+
+  radius = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+  console.log("Radius: " + radius);
+  return radius;
+}
+
 //Adding markers to the map. I don't how to do ajax properly
 ///*
-function addMarkers(event){
+function addMarkers(data, map){
+    console.log("JSON data recieved");
+    //console.log(data);
+    var results = data.results;
+    console.log(results);
+
+    var currTotal = currTotal + results[0].value;;
+    var numReadings = 1;
+    for(var i = 1; i < results.length; i++){
+      if((results[i].location == results[i-1].location) && (results[i].parameter == results[i-1].parameter)){
+        currTotal = currTotal + results[i].value;
+        numReadings = numReadings + 1;
+      }
+      else{
+        var lat = results[i-1].coordinates.latitude;
+        var lng = results[i-1].coordinates.longitude;
+        var average = currTotal/numReadings;
+        L.marker([lat,lng]).addTo(map).bindPopup("Location: " + results[i-1].location + "\n" + results[i-1].parameter + ": " + average);
+        //console.log("in else and i is " + i);
+        numReadings = 0;
+        currTotal = 0;
+      }
+    }
+
+   // for()
+    /*
     if(app.map1.markers.length > 0){
       for(var i = 0; i < app.map1.markers.length; i++){
         console.log(app.map1.markers[i].coordinates.latitude);
@@ -93,11 +153,42 @@ function addMarkers(event){
     else {
       console.log("Markers did not make it in time");
     }
+    */
 }
-          //*/
+
+var getData = function(latitude, longitude, radius, date, map) {
+
+  console.log("getData lat " + latitude);
+  console.log("getData long " + longitude);
+  console.log("getData radius " + radius);
+  console.log("getData date " + date);
+
+
+  var req = new XMLHttpRequest();
+
+
+  req.onreadystatechange = function() {
+    if (req.readyState == 4 && req.status == 200) {
+      addMarkers(JSON.parse(req.response),map);
+    }
+  };
+  var order = "&order_by[]=location&order_by[]=parameter";
+  var parameter = "parameter[]=pm25&parameter[]=pm10&parameter[]=so2&parameter[]=no2&parameter[]=o3&parameter[]=co&parameter[]=bc";
+  var url = "https://api.openaq.org/v1/measurements?" + parameter + "&coordinates="+latitude+","+longitude+"&radius="+radius+"&date_from="+date+order+"&limit=10000";
+  req.open("GET", url, true);
+  req.send();
+};
 
 function getAQ(latitude,longitude,mapview){
-  var date = "2019-04-10"
+
+  //gets the date 30 prior to today
+	var dateObj = new Date(new Date().setDate(new Date().getDate() - 30));
+  var month = dateObj.getUTCMonth() + 1; //months from 1-12
+  var day = dateObj.getUTCDate();
+  var year = dateObj.getUTCFullYear();
+
+  var date = year + "-" + month + "-" + day;
+
   var parameter = "o3";
   var address = "https://api.openaq.org/v1/measurements?parameter="+parameter+"&coordinates="+latitude+","+longitude+"&radius=10000&data_from="+date+"&limit=10"
   $.ajax({url: address, success: function(response){
