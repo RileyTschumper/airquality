@@ -143,6 +143,7 @@ function addMarkers(data, map){
         L.marker([lat,lng]).addTo(map).bindPopup("Location: " + results[i-1].location + results[i-1].parameter + ": " + average);
         numReadings = 0;
         currTotal = 0;
+        //set currTotal and reading to new data point
       }
     }
 }
