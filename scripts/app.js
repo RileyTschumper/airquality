@@ -31,7 +31,7 @@ app = new Vue({
     methods: { /* Any app-specific functions go here */
         initMap() {
           //Initializing First Map
-            this.map1.map = L.map('map').setView([this.map1.latitude, this.map1.longitude], this.map1.zoom);
+            this.map1.map = L.map('map', {minZoom: 9, maxZoom: 16}).setView([this.map1.latitude, this.map1.longitude], this.map1.zoom);
             this.map1.tileLayer = L.tileLayer(
                 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
                 {
@@ -50,7 +50,7 @@ app = new Vue({
             });
 
             //Initializing Second map
-            this.map2.map = L.map('map2').setView([this.map2.latitude, this.map2.longitude], this.map2.zoom);
+            this.map2.map = L.map('map2', {minZoom: 9, maxZoom: 16}).setView([this.map2.latitude, this.map2.longitude], this.map2.zoom);
             this.map2.tileLayer = L.tileLayer(
                 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
                 {
