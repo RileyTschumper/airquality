@@ -1,7 +1,7 @@
 # Air Quality
 
 ## Todo List
-- Add min/max zoom for map
+- Fix error when no results are in radius
 - Fill in marker data to table
 - Create scroll bar to table
 - Delete markers that are outside of our radius
@@ -21,6 +21,7 @@ April 13, 2019 3:17pm
 + Not working
   + Radius isn't very accurate. I think it is too large because I don't know how to use Haversine formula.
   + Only map1 is working as of right now. Can easily add the functionality to map2 though.
+  + Error when no results are in radius.
   
 April 11, 2019 at 10:45pm
 + New
