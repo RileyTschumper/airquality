@@ -147,6 +147,39 @@ function addMarkers(data, map){
     }
 }
 
+function updateTable(data){
+  var results = data.results;
+  var table = document.getElementById("data-table-body");
+  var tr;
+  var td;
+  for(var i = 0; i < results.length; i++){
+    tr = document.createElement("tr");
+
+    td = document.createElement("td");
+    td.innerHTML = results[i].date.local;
+    tr.appendChild(td);
+
+    td = document.createElement("td");
+    td.innerHTML = results[i].location;
+    tr.appendChild(td);
+
+    td = document.createElement("td");
+    td.innerHTML = results[i].parameter;
+    tr.appendChild(td);
+
+    td = document.createElement("td");
+    td.innerHTML = results[i].value;
+    tr.appendChild(td);
+
+    td = document.createElement("td");
+    td.innerHTML = results[i].unit;
+    tr.appendChild(td);
+
+    table.appendChild(tr);
+  }
+
+}
+
 //HTTP Request to Open AQ API
 var getData = function(latitude, longitude, radius, date, map) {
 
@@ -161,6 +194,7 @@ var getData = function(latitude, longitude, radius, date, map) {
     if (req.readyState == 4 && req.status == 200) {
       //call the addMarkers function with JSON data
       addMarkers(JSON.parse(req.response),map);
+      updateTable(JSON.parse(req.response));
     }
   };
 
