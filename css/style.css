@@ -8,9 +8,9 @@ html{
     height: 600px;
 }
 .map-container{
-  width: 49%;
-  float: left;
+  padding-left: 20px;
 }
+
 #map1-container{
   border-right: solid 1px black
 }
