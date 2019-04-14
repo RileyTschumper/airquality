@@ -10,6 +10,7 @@ April 14, 2019 12:54am
 + New
   + Table was added using Bootstrap
   + Table is automatically updated when new data is recieved (it takes a couple seconds)
+  + Table has a scroll bar as well!
 + Not working
   + It only works for Map 1
 
