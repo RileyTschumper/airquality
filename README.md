@@ -1,7 +1,6 @@
 # Air Quality
 
 ## Todo List
-- Add min/max zoom for map
 - Fill in marker data to table
 - Create scroll bar to table
 - Delete markers that are outside of our radius
