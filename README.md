@@ -4,10 +4,15 @@
 - Add min/max zoom for map
 - Fill in marker data to table
 - Create scroll bar to table
-- Update CSS and UI to make it prettier
 - Delete markers that are outside of our radius
 
 ## Changelog
+April 14, 2019 12:12am
++ New
+  + Bootstrap was added
+  + Added styling
+  + Added min/max zoom as a map parameter to limit request size
+
 April 13, 2019 3:17pm
 + New
   + Created a new Open AQ request function (Used standard HTTP request, no jquery/ajax stuff)
