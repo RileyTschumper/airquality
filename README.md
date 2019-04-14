@@ -11,6 +11,7 @@ April 14, 2019 12:12am
 + New
   + Bootstrap was added
   + Added styling
+  + Added min/max zoom as a map parameter to limit request size
 
 April 13, 2019 3:17pm
 + New
