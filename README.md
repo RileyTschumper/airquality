@@ -1,12 +1,20 @@
 # Air Quality
 
 ## Todo List
+- Add markers on load, not just after the first move of the map
 - Fix error when no results are in radius
-- Fill in marker data to table
-- Create scroll bar to table
+- Map 1 is functioning with markers and a table, do the same for Map 2
 - Delete markers that are outside of our radius
 
 ## Changelog
+April 14, 2019 12:54am
++ New
+  + Table was added using Bootstrap
+  + Table is automatically updated when new data is recieved (it takes a couple seconds)
+  + Table has a scroll bar as well!
++ Not working
+  + It only works for Map 1
+
 April 14, 2019 12:12am
 + New
   + Bootstrap was added
