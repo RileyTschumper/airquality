@@ -1,6 +1,7 @@
 # Air Quality
 
 ## Todo List
+- Add markers on load, not just after the first move of the map
 - Fix error when no results are in radius
 - Map 1 is functioning with markers and a table, do the same for Map 2
 - Delete markers that are outside of our radius
