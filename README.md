@@ -3,14 +3,22 @@
 ## Todo List
 - Add markers on load, not just after the first move of the map
 - Fix error when no results are in radius
-- Map 1 is functioning with markers and a table, do the same for Map 2
 - Delete markers that are outside of our radius
+- Add Nominatim input feature
 
 ## Changelog
+April 16, 2019 8:57pm
++ New
+  + Added second table
+  + Added markers to second map
+  + Generalize functions with parameter view = map1 or map2 and map = (map1/map2).map
++ Not working
+  + Webpage freezes while waiting for retrieve data.
+
 April 14, 2019 12:54am
 + New
   + Table was added using Bootstrap
-  + Table is automatically updated when new data is recieved (it takes a couple seconds)
+  + Table is automatically updated when new data is received (it takes a couple seconds)
   + Table has a scroll bar as well!
 + Not working
   + It only works for Map 1
@@ -30,7 +38,7 @@ April 13, 2019 3:17pm
   + Radius isn't very accurate. I think it is too large because I don't know how to use Haversine formula.
   + Only map1 is working as of right now. Can easily add the functionality to map2 though.
   + Error when no results are in radius.
-  
+
 April 11, 2019 at 10:45pm
 + New
   + Create second independent map
@@ -38,7 +46,7 @@ April 11, 2019 at 10:45pm
   + Create simple table placeholders for each map
 + Not working
   + Markers are not added to table
-  
+
 April 9, 2019 at 4:03pm
 + New
   + Input boxes now update when panned
@@ -51,5 +59,3 @@ April 9, 2019 at 2:55pm
   + Any updates to the input boxes, update the map using the @change directive
 + Not working
   + Input boxes don't update when new location is panned
-
-
