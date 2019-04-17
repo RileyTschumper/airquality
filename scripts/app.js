@@ -42,6 +42,7 @@ app = new Vue({
                 }
               );
               this.map1.tileLayer.addTo(this.map1.map);
+              updateMarkers(this.map1);
 
             this.map1.map.on("move", ()=>{
                 updateCenterMap(this.map1);
@@ -61,6 +62,7 @@ app = new Vue({
                 }
               );
               this.map2.tileLayer.addTo(this.map2.map);
+              updateMarkers(this.map2);
 
             this.map2.map.on("move", ()=>{
                 updateCenterMap(this.map2);
@@ -108,15 +110,10 @@ function updateMarkers(view){
 
 //This isn't proper Haversine, but it works...kinda. Radius is a bit large I think
 function calculateRadius(map){
-  var centerLat = map.getCenter().lat;
-  var centerLng = map.getCenter().lng;
-  var northeastLat = map.getBounds().getNorthEast().lat;
-  var northeastLng = map.getBounds().getNorthEast().lng;
+  var northEast = map.getBounds().getNorthEast();
+  var southWest = map.getBounds().getSouthWest();
+  radius = southWest.distanceTo(northEast) / 2.0;
 
-  var y = 111111*Math.abs(northeastLat - centerLat);
-  var x = 111111*Math.abs(northeastLng - centerLng);
-
-  radius = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
   console.log("Radius: " + radius);
   return radius;
 }
@@ -126,11 +123,18 @@ function addMarkers(data, map){
     console.log("JSON data recieved");;
     var results = data.results;
     console.log(results);
-    console.log(map);
-    var markerString = '';
+    //console.log(map);
 
+    //if no results for the area.
+    if(results.length == 0){
+      console.log("no results for this area");
+      return;
+    }
+
+    var markerString = '';
     var currTotal = currTotal + results[0].value;;
     var numReadings = 1;
+
     //Loops through all readings
     for(var i = 1; i < results.length; i++){
       //if location and parameter match, keep a running total to calculate an average
