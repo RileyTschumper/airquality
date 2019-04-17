@@ -7,6 +7,7 @@
 - Add Nominatim input feature
 
 ## Changelog
++ https://www3.epa.gov/airnow/aqi-technical-assistance-document-sept2018.pdf
 April 16, 2019 8:57pm
 + New
   + Added second table
