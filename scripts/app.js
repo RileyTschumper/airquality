@@ -6,6 +6,7 @@ app = new Vue({
     el: '#app',
     data: {
         map1:{
+          index: 1,
           map: null,
           tileLayer: null,
           latitude: 44.94,
@@ -14,6 +15,7 @@ app = new Vue({
           markers: []
         },
         map2:{
+          index: 2,
           map: null,
           titleLayer:null,
           latitude: 39.90,
@@ -41,12 +43,12 @@ app = new Vue({
               );
               this.map1.tileLayer.addTo(this.map1.map);
 
-            this.map1.map.on("move", function(e){
-                updateCenterMap1();
+            this.map1.map.on("move", ()=>{
+                updateCenterMap(this.map1);
             });
 
-            this.map1.map.on("moveend", function(e){
-              updateMarkers1();
+            this.map1.map.on("moveend", ()=>{
+              updateMarkers(this.map1);
             });
 
             //Initializing Second map
@@ -60,8 +62,11 @@ app = new Vue({
               );
               this.map2.tileLayer.addTo(this.map2.map);
 
-            this.map2.map.on("move", function(e){
-                updateCenterMap2();
+            this.map2.map.on("move", ()=>{
+                updateCenterMap(this.map2);
+            });
+            this.map2.map.on("moveend", ()=>{
+              updateMarkers(this.map2);
             });
         },
         updateMap1(){
@@ -76,17 +81,14 @@ app = new Vue({
 
 }//Init()
 
-function updateCenterMap1(){
-  app.map1.latitude = app.map1.map.getCenter().lat;
-  app.map1.longitude = app.map1.map.getCenter().lng;
+function updateCenterMap(view){
+  view.latitude = view.map.getCenter().lat;
+  view.longitude = view.map.getCenter().lng;
 }
 
-function updateCenterMap2(){
-app.map2.latitude = app.map2.map.getCenter().lat;
-app.map2.longitude = app.map2.map.getCenter().lng;
-}
 
-function updateMarkers1(){
+function updateMarkers(view){
+  console.log(view);
   //gets the date 30 prior to today
 	var dateObj = new Date(new Date().setDate(new Date().getDate() - 30));
   var month = dateObj.getUTCMonth() + 1; //months from 1-12
@@ -95,21 +97,21 @@ function updateMarkers1(){
   var date = year + "-" + month + "-" + day;
 
   //gets the radius based on the current map view
-  var radius = calculateRadius(app.map1.map);
+  var radius = calculateRadius(view.map);
 
   //gets the lat and lng at center of the map
-  var latitude = app.map1.map.getCenter().lat;
-  var longitude = app.map1.map.getCenter().lng;
+  var latitude = view.map.getCenter().lat;
+  var longitude = view.map.getCenter().lng;
 
-  getData(latitude, longitude, radius, date, app.map1.map);
+  getData(latitude, longitude, radius, date, view);
 }
 
 //This isn't proper Haversine, but it works...kinda. Radius is a bit large I think
 function calculateRadius(map){
-  var centerLat = app.map1.map.getCenter().lat;
-  var centerLng = app.map1.map.getCenter().lng;
-  var northeastLat = app.map1.map.getBounds().getNorthEast().lat;
-  var northeastLng = app.map1.map.getBounds().getNorthEast().lng;
+  var centerLat = map.getCenter().lat;
+  var centerLng = map.getCenter().lng;
+  var northeastLat = map.getBounds().getNorthEast().lat;
+  var northeastLng = map.getBounds().getNorthEast().lng;
 
   var y = 111111*Math.abs(northeastLat - centerLat);
   var x = 111111*Math.abs(northeastLng - centerLng);
@@ -119,11 +121,12 @@ function calculateRadius(map){
   return radius;
 }
 
-//Adding markers to the map. 
+//Adding markers to the map.
 function addMarkers(data, map){
     console.log("JSON data recieved");;
     var results = data.results;
     console.log(results);
+    console.log(map);
 
     var currTotal = currTotal + results[0].value;;
     var numReadings = 1;
@@ -148,9 +151,11 @@ function addMarkers(data, map){
     }
 }
 
-function updateTable(data){
+function updateTable(data, view){
   var results = data.results;
-  var table = document.getElementById("data-table-body");
+  var tableID = "data-table-body"+view.index;
+  console.log(tableID);
+  var table = document.getElementById(tableID);
   var tr;
   var td;
   for(var i = 0; i < results.length; i++){
@@ -182,7 +187,7 @@ function updateTable(data){
 }
 
 //HTTP Request to Open AQ API
-var getData = function(latitude, longitude, radius, date, map) {
+var getData = function(latitude, longitude, radius, date, view) {
 
   console.log("getData lat " + latitude);
   console.log("getData long " + longitude);
@@ -194,8 +199,8 @@ var getData = function(latitude, longitude, radius, date, map) {
   req.onreadystatechange = function() {
     if (req.readyState == 4 && req.status == 200) {
       //call the addMarkers function with JSON data
-      addMarkers(JSON.parse(req.response),map);
-      updateTable(JSON.parse(req.response));
+      addMarkers(JSON.parse(req.response),view.map);
+      updateTable(JSON.parse(req.response),view);
     }
   };
 
