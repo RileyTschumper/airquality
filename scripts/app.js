@@ -1,4 +1,5 @@
 var app;
+var timeout = null;
 
 function Init() {
 
@@ -33,7 +34,7 @@ app = new Vue({
     methods: { /* Any app-specific functions go here */
         initMap() {
           //Initializing First Map
-            this.map1.map = L.map('map', {minZoom: 9, maxZoom: 16}).setView([this.map1.latitude, this.map1.longitude], this.map1.zoom);
+            this.map1.map = L.map('map', {minZoom: 9, maxZoom: 16, preferCanvas: true}).setView([this.map1.latitude, this.map1.longitude], this.map1.zoom);
             this.map1.tileLayer = L.tileLayer(
                 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
                 {
@@ -49,7 +50,22 @@ app = new Vue({
             });
 
             this.map1.map.on("moveend", ()=>{
-              updateMarkers(this.map1);
+              if(timeout != null){
+                clearTimeout(timeout);
+              }
+              timeout = setTimeout(()=>{
+                updateMarkers(this.map1);
+                timeout = null;
+              }, 2000);
+            });
+            this.map1.map.on("zoomend", ()=>{
+              if(timeout != null){
+                clearTimeout(timeout);
+              }
+              timeout = setTimeout(()=>{
+                updateMarkers(this.map1);
+                timeout = null;
+              }, 2000);
             });
 
             //Initializing Second map
@@ -67,8 +83,24 @@ app = new Vue({
             this.map2.map.on("move", ()=>{
                 updateCenterMap(this.map2);
             });
+            
             this.map2.map.on("moveend", ()=>{
-              updateMarkers(this.map2);
+              if(timeout != null){
+                clearTimeout(timeout);
+              }
+              timeout = setTimeout(()=>{
+                updateMarkers(this.map2);
+                timeout = null;
+              }, 2000);
+            });
+            this.map2.map.on("zoomend", ()=>{
+              if(timeout != null){
+                clearTimeout(timeout);
+              }
+              timeout = setTimeout(()=>{
+                updateMarkers(this.map2);
+                timeout = null;
+              }, 2000);
             });
         },
         updateMap1(){
@@ -128,6 +160,7 @@ function removeMarkers(view){
   view.markers = [];
 }
 
+
 //Adding markers to the map.
 function addMarkers(data, map, view){
     console.log("JSON data recieved");;
@@ -145,7 +178,7 @@ function addMarkers(data, map, view){
     }
 
     var markerString = '';
-    var currTotal = currTotal + results[0].value;;
+    var currTotal = results[0].value;;
     var numReadings = 1;
     //Loops through all readings
     for(var i = 1; i < results.length; i++){
@@ -154,22 +187,30 @@ function addMarkers(data, map, view){
       if((results[i].location == results[i-1].location) && (results[i].parameter == results[i-1].parameter)){
         currTotal = currTotal + results[i].value;
         numReadings = numReadings + 1;
+        if( isNaN(results[i].value)){
+          console.log("Not a number: " + results[i].value);
+        }
       }
       //if location are no longer the same, calculate average and place down marker
       else if(results[i].location == results[i-1].location){
+       
         var average = currTotal/numReadings;
+        console.log("Location: " + results[i].location + " Parameter: " + results[i].parameter +" Average: " + average);
         markerString = markerString + '<br />' + results[i-1].parameter + ": " + average;
       }
       //if location are no longer the same, calculate average and place down marker
       else{
         var average = currTotal/numReadings;
+        console.log("numReadings: " + numReadings);
         markerString = markerString + '<br />' + results[i-1].parameter + ": " + average;
+        console.log("Location2: " + results[i-1].location + " Parameter: " + results[i-1].parameter + " Average: " + average);
         var lat = results[i-1].coordinates.latitude;
         var lng = results[i-1].coordinates.longitude;
         var newMarker = new L.marker([lat,lng]).addTo(map).bindPopup('<p> Location: ' + results[i-1].location + markerString + '<p>');
         view.markers.push(newMarker);
         numReadings = 1;
         currTotal = results[i].value;
+        markerString = '';
       }
     }
 }
@@ -178,7 +219,10 @@ function updateTable(data, view){
   var results = data.results;
   var tableID = "data-table-body"+view.index;
   console.log(tableID);
+
+  //clear table
   document.getElementById(tableID).innerHTML = '';
+
   var table = document.getElementById(tableID);
   var tr;
   var td;
@@ -291,24 +335,3 @@ var getData = function(latitude, longitude, radius, date, view) {
   req.open("GET", url, true);
   req.send();
 };
-
-/*
-function getAQ(latitude,longitude,mapview){
-
-  //gets the date 30 prior to today
-	var dateObj = new Date(new Date().setDate(new Date().getDate() - 30));
-  var month = dateObj.getUTCMonth() + 1; //months from 1-12
-  var day = dateObj.getUTCDate();
-  var year = dateObj.getUTCFullYear();
-
-  var date = year + "-" + month + "-" + day;
-
-  var parameter = "o3";
-  var address = "https://api.openaq.org/v1/measurements?parameter="+parameter+"&coordinates="+latitude+","+longitude+"&radius=10000&data_from="+date+"&limit=10"
-  $.ajax({url: address, success: function(response){
-    mapview.markers = response.results;
-//    console.log(app.map1.markers);
-  }
-});
-}//getAQ
-*/
