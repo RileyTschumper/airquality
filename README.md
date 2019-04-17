@@ -8,6 +8,11 @@
 - Implement heatmap visualization overlay
 
 ## Changelog
+April 17, 2019 2:17pm
++ New
+  + Fixed marker bugs
+  + Added timeouts to limit API requests
+  
 April 16, 2019 10:52pm
 + New
   + If multiple markers are in one spot, add all data to it
