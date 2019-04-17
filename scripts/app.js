@@ -34,7 +34,7 @@ app = new Vue({
     methods: { /* Any app-specific functions go here */
         initMap() {
           //Initializing First Map
-            this.map1.map = L.map('map', {minZoom: 9, maxZoom: 16, preferCanvas: true}).setView([this.map1.latitude, this.map1.longitude], this.map1.zoom);
+            this.map1.map = L.map('map', {minZoom: 9, maxZoom: 16}).setView([this.map1.latitude, this.map1.longitude], this.map1.zoom);
             this.map1.tileLayer = L.tileLayer(
                 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
                 {
@@ -110,10 +110,45 @@ app = new Vue({
             this.map2.map.setView([this.map2.latitude, this.map2.longitute], this.map2.zoom);
         }
 
+
+
     }//methods,
   });//VUE app
 
 }//Init()
+
+function updateMap(view){
+  view.map.setView([view.latitude, view.longitude], view.zoom);
+}
+
+function findLocation(id, map){
+  var x = document.getElementById(id).value;
+  console.log(x);
+  console.log(map);
+  var resultString = '';
+  var view = '';
+  if(map == "map1"){
+    console.log("in if");
+    view = app.map1;
+  }
+  else{
+    console.log("in else");
+    view = app.map2;
+  }
+
+  resultString = x.split(' ').join('%20');
+  console.log(resultString);
+  getDataNominatim(resultString, view);
+}
+
+function centerMap(data, view){
+  console.log("data from nom");
+  console.log(data[0].lat);
+  view.latitude = data[0].lat;
+  view.longitude = data[0].lon;
+  updateMap(view);
+  updateMarkers(view);
+}
 
 function updateCenterMap(view){
   view.latitude = view.map.getCenter().lat;
@@ -122,7 +157,7 @@ function updateCenterMap(view){
 
 
 function updateMarkers(view){
-  console.log(view);
+  console.log("lat in view: " + view.latitude);
   //gets the date 30 prior to today
 	var dateObj = new Date(new Date().setDate(new Date().getDate() - 30));
   var month = dateObj.getUTCMonth() + 1; //months from 1-12
@@ -307,6 +342,26 @@ function getColor(data){
     else return "maroon"
   }
 }
+
+//HTTP Request to Nominatim API
+var getDataNominatim = function(requestString, view) {
+
+  var req = new XMLHttpRequest();
+
+  req.onreadystatechange = function() {
+    if (req.readyState == 4 && req.status == 200) {
+      //call the addMarkers function with JSON data
+      //addMarkers(JSON.parse(req.response),view.map, view);
+      //updateTable(JSON.parse(req.response),view);
+      centerMap(JSON.parse(req.response), view);
+    }
+  };
+
+  
+  var url = "https://nominatim.openstreetmap.org/search/" + requestString + "?format=json&limit=1";
+  req.open("GET", url, true);
+  req.send();
+};
 
 //HTTP Request to Open AQ API
 var getData = function(latitude, longitude, radius, date, view) {

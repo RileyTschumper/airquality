@@ -40,6 +40,11 @@
                   <label for="zoom" class="p-1 m-0">Zoom</label>
                   <input type="text" class="form-control" v-model="map1.zoom" @change="updateMap1()">
                 </div>
+
+                <div class="col pb-1">
+                    <label for="search" class="p-1 m-0">Search</label>
+                    <input type="text" class="form-control" @change="findLocation(map1)">
+                </div>
               </div>
             </form>
         </div>
@@ -51,17 +56,23 @@
                   <div class="col-auto d-inline-block pb-1">
                     <label for="lat" class="p-1 m-0">Latitude</label>
                     <input type="text" class="form-control" v-model="map2.latitude" @change="updateMap2()">
-                </div>
+                  </div>
 
-                <div class="col-auto d-inline-block pb-1">
-                  <label for="lng" class="p-1 m-0">Longitude</label>
-                  <input type="text" class="form-control" v-model="map2.longitude" @change="updateMap2()">
-                </div>
+                  <div class="col-auto d-inline-block pb-1">
+                    <label for="lng" class="p-1 m-0">Longitude</label>
+                    <input type="text" class="form-control" v-model="map2.longitude" @change="updateMap2()">
+                  </div>
 
-                <div class="col-auto d-inline-block pb-1">
-                  <label for="zoom" class="p-1 m-0">Zoom</label>
-                  <input type="text" class="form-control" v-model="map2.zoom" @change="updateMap2()">
-                </div>
+                  <div class="col-auto d-inline-block pb-1">
+                    <label for="zoom" class="p-1 m-0">Zoom</label>
+                    <input type="text" class="form-control" v-model="map2.zoom" @change="updateMap2()">
+                  </div>
+                  <form  class="form-inline">
+                    <div class="col pb-1">
+                        <label for="search" class="p-1 m-0">Search (Click enter to search)</label>
+                        <input id="map2Search" type="text" class="form-control" @change="findLocation(&quot;map2Search&quot;,&quot;map2&quot;)">
+                    </div>
+                  </form>
               </div>
             </form>
         </div>
