@@ -127,6 +127,7 @@ function addMarkers(data, map){
     var results = data.results;
     console.log(results);
     console.log(map);
+    var markerString = '';
 
     var currTotal = currTotal + results[0].value;;
     var numReadings = 1;
@@ -138,15 +139,20 @@ function addMarkers(data, map){
         currTotal = currTotal + results[i].value;
         numReadings = numReadings + 1;
       }
-      //if location or parameter are no longer the same, calculate average and place down marker
+      //if location are no longer the same, calculate average and place down marker
+      else if(results[i].location == results[i-1].location){
+        var average = currTotal/numReadings;
+        markerString = markerString + '<br />' + results[i-1].parameter + ": " + average;
+      }
+      //if location are no longer the same, calculate average and place down marker
       else{
+        var average = currTotal/numReadings;
+        markerString = markerString + '<br />' + results[i-1].parameter + ": " + average;
         var lat = results[i-1].coordinates.latitude;
         var lng = results[i-1].coordinates.longitude;
-        var average = currTotal/numReadings;
-        L.marker([lat,lng]).addTo(map).bindPopup("Location: " + results[i-1].location + results[i-1].parameter + ": " + average);
-        numReadings = 0;
-        currTotal = 0;
-        //set currTotal and reading to new data point
+        L.marker([lat,lng]).addTo(map).bindPopup('<p> Location: ' + results[i-1].location + markerString + '<p>');
+        numReadings = 1;
+        currTotal = results[i].value;
       }
     }
 }
