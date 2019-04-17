@@ -1,10 +1,10 @@
 # Air Quality
 
 ## Todo List
-- Add Nominatim input feature
-- Add units parameter to coloring in table
-- Fix bugs in all data on one marker
-- Allow either map (along with the location input box) to go fullscreen
+- Add Nominatim input feature (Riley)
+- Add units parameter to coloring in table (Brandon)
+- Fix bugs in all data on one marker (Riley)
+- Allow either map (along with the location input box) to go fullscreen (Brandon)
 - Implement heatmap visualization overlay
 
 ## Changelog
