@@ -1,13 +1,25 @@
 # Air Quality
 
 ## Todo List
-- Add markers on load, not just after the first move of the map
-- Fix error when no results are in radius
-- Delete markers that are outside of our radius
-- Add Nominatim input feature
+- Add Nominatim input feature (Riley)
+- Add units parameter to coloring in table (Brandon)
+- Fix bugs in all data on one marker (Riley)
+- Allow either map (along with the location input box) to go fullscreen (Brandon)
+- Implement heatmap visualization overlay
 
 ## Changelog
-+ https://www3.epa.gov/airnow/aqi-technical-assistance-document-sept2018.pdf
+April 16, 2019 10:52pm
++ New
+  + If multiple markers are in one spot, add all data to it
+  + First set of markers is added when map is loaded
+  + Old markers get removed when new data is fetched
+  + Fixed the no results in radius error
+  + Added safety coloring to our table (link below)
+  + https://www3.epa.gov/airnow/aqi-technical-assistance-document-sept2018.pdf
++ Not working
+  + Need to add units for coloring...some particles come in with different units
+  + Adding all data to one marker is still buggy
+
 April 16, 2019 8:57pm
 + New
   + Added second table
