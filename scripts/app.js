@@ -108,7 +108,7 @@ function updateMarkers(view){
   getData(latitude, longitude, radius, date, view);
 }
 
-//This isn't proper Haversine, but it works...kinda. Radius is a bit large I think
+//Calculates radius of current map
 function calculateRadius(map){
   var northEast = map.getBounds().getNorthEast();
   var southWest = map.getBounds().getSouthWest();
@@ -118,12 +118,25 @@ function calculateRadius(map){
   return radius;
 }
 
+function removeMarkers(view){
+  if(view.markers.length == 0){
+    return;
+  }
+  for(i=0;i<view.markers.length;i++) {
+    view.map.removeLayer(view.markers[i]);
+  }  
+  view.markers = [];
+}
+
 //Adding markers to the map.
-function addMarkers(data, map){
+function addMarkers(data, map, view){
     console.log("JSON data recieved");;
     var results = data.results;
     console.log(results);
     //console.log(map);
+
+    //removes old markers from the map
+    removeMarkers(view);
 
     //if no results for the area.
     if(results.length == 0){
@@ -134,7 +147,6 @@ function addMarkers(data, map){
     var markerString = '';
     var currTotal = currTotal + results[0].value;;
     var numReadings = 1;
-
     //Loops through all readings
     for(var i = 1; i < results.length; i++){
       //if location and parameter match, keep a running total to calculate an average
@@ -154,7 +166,8 @@ function addMarkers(data, map){
         markerString = markerString + '<br />' + results[i-1].parameter + ": " + average;
         var lat = results[i-1].coordinates.latitude;
         var lng = results[i-1].coordinates.longitude;
-        L.marker([lat,lng]).addTo(map).bindPopup('<p> Location: ' + results[i-1].location + markerString + '<p>');
+        var newMarker = new L.marker([lat,lng]).addTo(map).bindPopup('<p> Location: ' + results[i-1].location + markerString + '<p>');
+        view.markers.push(newMarker);
         numReadings = 1;
         currTotal = results[i].value;
       }
@@ -165,6 +178,7 @@ function updateTable(data, view){
   var results = data.results;
   var tableID = "data-table-body"+view.index;
   console.log(tableID);
+  document.getElementById(tableID).innerHTML = '';
   var table = document.getElementById(tableID);
   var tr;
   var td;
@@ -185,6 +199,8 @@ function updateTable(data, view){
 
     td = document.createElement("td");
     td.innerHTML = results[i].value;
+    td.style.backgroundColor = getColor(results[i]);
+    td.style.color = 'black';
     tr.appendChild(td);
 
     td = document.createElement("td");
@@ -194,6 +210,58 @@ function updateTable(data, view){
     table.appendChild(tr);
   }
 
+}
+
+//Need to check units
+function getColor(data){
+  if(data.parameter == 'pm25'){
+    if(data.value <= 12.0) return "green"
+    if(data.value <= 35.4) return "yellow"
+    if(data.value <= 55.4) return "orange"
+    if(data.value <= 150.4) return "red"
+    if(data.value <= 250.4) return "purple"
+    else return "maroon"
+  }
+  else if(data.parameter == 'pm10'){
+    if(data.value <= 54.0) return "green"
+    if(data.value <= 154.0) return "yellow"
+    if(data.value <= 254.0) return "orange"
+    if(data.value <= 354.0) return "red"
+    if(data.value <= 424.0) return "purple"
+    else return "maroon"
+  }
+  else if(data.parameter == 'co'){
+    if(data.value <= 4.4) return "green"
+    if(data.value <= 9.4) return "yellow"
+    if(data.value <= 12.4) return "orange"
+    if(data.value <= 15.4) return "red"
+    if(data.value <= 30.4) return "purple"
+    else return "maroon"
+  }
+  else if(data.parameter == 'so2'){
+    if(data.value <= 35.0) return "green"
+    if(data.value <= 75.0) return "yellow"
+    if(data.value <= 185.0) return "orange"
+    if(data.value <= 304.0) return "red"
+    if(data.value <= 604.0) return "purple"
+    else return "maroon"
+  }
+  else if(data.parameter == 'no2'){
+    if(data.value <= 53.0) return "green"
+    if(data.value <= 100.0) return "yellow"
+    if(data.value <= 360.0) return "orange"
+    if(data.value <= 649.0) return "red"
+    if(data.value <= 1249.0) return "purple"
+    else return "maroon"
+  }
+  else if(data.parameter == 'o3'){
+    if(data.value <= 0.054) return "green"
+    if(data.value <= 0.070) return "yellow"
+    if(data.value <= 0.085) return "orange"
+    if(data.value <= 0.105) return "red"
+    if(data.value <= 0.200) return "purple"
+    else return "maroon"
+  }
 }
 
 //HTTP Request to Open AQ API
@@ -209,7 +277,7 @@ var getData = function(latitude, longitude, radius, date, view) {
   req.onreadystatechange = function() {
     if (req.readyState == 4 && req.status == 200) {
       //call the addMarkers function with JSON data
-      addMarkers(JSON.parse(req.response),view.map);
+      addMarkers(JSON.parse(req.response),view.map, view);
       updateTable(JSON.parse(req.response),view);
     }
   };
