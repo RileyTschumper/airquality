@@ -13,7 +13,7 @@ April 17, 2019 8:09pm
 + New
   + Added Nominatim functionality to both maps
 + Not working
-  + Search box does not update when panning
+  + Search box does not update when panning (I haven't added it to the model yet)
   
 April 17, 2019 2:17pm
 + New
