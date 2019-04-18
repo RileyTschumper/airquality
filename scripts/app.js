@@ -26,8 +26,6 @@ app = new Vue({
         }
     },
     mounted() { /* Code to run when app is mounted */
-      //getAQ(this.map1.latitude,this.map1.longitude,this.map1);
-      //getAQ(this.map2.latitude,this.map2.longitude,this.map2);
       this.initMap();
         //this.mapListener();
     },
@@ -83,7 +81,7 @@ app = new Vue({
             this.map2.map.on("move", ()=>{
                 updateCenterMap(this.map2);
             });
-            
+
             this.map2.map.on("moveend", ()=>{
               if(timeout != null){
                 clearTimeout(timeout);
@@ -190,7 +188,7 @@ function removeMarkers(view){
   }
   for(i=0;i<view.markers.length;i++) {
     view.map.removeLayer(view.markers[i]);
-  }  
+  }
   view.markers = [];
 }
 
@@ -227,17 +225,17 @@ function addMarkers(data, map, view){
       }
       //if location are no longer the same, calculate average and place down marker
       else if(results[i].location == results[i-1].location){
-       
-        var average = currTotal/numReadings;
-        console.log("Location: " + results[i].location + " Parameter: " + results[i].parameter +" Average: " + average);
-        markerString = markerString + '<br />' + results[i-1].parameter + ": " + average;
+
+        var average = unitConvert(results[i-1],currTotal/numReadings);
+  //      console.log("Location: " + results[i].location + " Parameter: " + results[i].parameter +" Average: " + average);
+        markerString = markerString + '<br />' + results[i-1].parameter +" ("+correctUnits(results[i-1].parameter)+")"+": " + average;
       }
       //if location are no longer the same, calculate average and place down marker
       else{
-        var average = currTotal/numReadings;
-        console.log("numReadings: " + numReadings);
-        markerString = markerString + '<br />' + results[i-1].parameter + ": " + average;
-        console.log("Location2: " + results[i-1].location + " Parameter: " + results[i-1].parameter + " Average: " + average);
+        var average = unitConvert(results[i-1], currTotal/numReadings);
+//        console.log("numReadings: " + numReadings);
+        markerString = markerString + '<br />' + results[i-1].parameter +" ("+correctUnits(results[i-1].parameter)+")"+": " + average;
+//        console.log("Location2: " + results[i-1].location + " Parameter: " + results[i-1].parameter + " Average: " + average);
         var lat = results[i-1].coordinates.latitude;
         var lng = results[i-1].coordinates.longitude;
         var newMarker = new L.marker([lat,lng]).addTo(map).bindPopup('<p> Location: ' + results[i-1].location + markerString + '<p>');
@@ -261,6 +259,9 @@ function updateTable(data, view){
   var tr;
   var td;
   for(var i = 0; i < results.length; i++){
+    var units = correctUnits(results[i].parameter);
+    var quantity = unitConvert(results[i], results[i].value);
+    var color = getColor(results[i],quantity);
     tr = document.createElement("tr");
 
     td = document.createElement("td");
@@ -276,13 +277,13 @@ function updateTable(data, view){
     tr.appendChild(td);
 
     td = document.createElement("td");
-    td.innerHTML = results[i].value;
-    td.style.backgroundColor = getColor(results[i]);
+    td.innerHTML = quantity.toPrecision(3);
+    td.style.backgroundColor = color;
     td.style.color = 'black';
     tr.appendChild(td);
 
     td = document.createElement("td");
-    td.innerHTML = results[i].unit;
+    td.innerHTML = units;
     tr.appendChild(td);
 
     table.appendChild(tr);
@@ -291,57 +292,149 @@ function updateTable(data, view){
 }
 
 //Need to check units
-function getColor(data){
+function getColor(data, quantity){
+//  console.log(data.parameter+" calculated: "+quantity+", value: "+data.value);
   if(data.parameter == 'pm25'){
-    if(data.value <= 12.0) return "green"
-    if(data.value <= 35.4) return "yellow"
-    if(data.value <= 55.4) return "orange"
-    if(data.value <= 150.4) return "red"
-    if(data.value <= 250.4) return "purple"
+    if(quantity <= 12.0) return "green"
+    if(quantity <= 35.4) return "yellow"
+    if(quantity <= 55.4) return "orange"
+    if(quantity <= 150.4) return "red"
+    if(quantity <= 250.4) return "purple"
     else return "maroon"
   }
   else if(data.parameter == 'pm10'){
-    if(data.value <= 54.0) return "green"
-    if(data.value <= 154.0) return "yellow"
-    if(data.value <= 254.0) return "orange"
-    if(data.value <= 354.0) return "red"
-    if(data.value <= 424.0) return "purple"
+    if(quantity <= 54.0) return "green"
+    if(quantity <= 154.0) return "yellow"
+    if(quantity <= 254.0) return "orange"
+    if(quantity <= 354.0) return "red"
+    if(quantity <= 424.0) return "purple"
     else return "maroon"
   }
   else if(data.parameter == 'co'){
-    if(data.value <= 4.4) return "green"
-    if(data.value <= 9.4) return "yellow"
-    if(data.value <= 12.4) return "orange"
-    if(data.value <= 15.4) return "red"
-    if(data.value <= 30.4) return "purple"
+    if(quantity <= 4.4) return "green"
+    if(quantity <= 9.4) return "yellow"
+    if(quantity <= 12.4) return "orange"
+    if(quantity <= 15.4) return "red"
+    if(quantity <= 30.4) return "purple"
     else return "maroon"
   }
   else if(data.parameter == 'so2'){
-    if(data.value <= 35.0) return "green"
-    if(data.value <= 75.0) return "yellow"
-    if(data.value <= 185.0) return "orange"
-    if(data.value <= 304.0) return "red"
-    if(data.value <= 604.0) return "purple"
+    if(quantity <= 35.0) return "green"
+    if(quantity <= 75.0) return "yellow"
+    if(quantity <= 185.0) return "orange"
+    if(quantity <= 304.0) return "red"
+    if(quantity <= 604.0) return "purple"
     else return "maroon"
   }
   else if(data.parameter == 'no2'){
-    if(data.value <= 53.0) return "green"
-    if(data.value <= 100.0) return "yellow"
-    if(data.value <= 360.0) return "orange"
-    if(data.value <= 649.0) return "red"
-    if(data.value <= 1249.0) return "purple"
+    if(quantity <= 53.0) return "green"
+    if(quantity <= 100.0) return "yellow"
+    if(quantity <= 360.0) return "orange"
+    if(quantity <= 649.0) return "red"
+    if(quantity <= 1249.0) return "purple"
     else return "maroon"
   }
   else if(data.parameter == 'o3'){
-    if(data.value <= 0.054) return "green"
-    if(data.value <= 0.070) return "yellow"
-    if(data.value <= 0.085) return "orange"
-    if(data.value <= 0.105) return "red"
-    if(data.value <= 0.200) return "purple"
+    if(quantity <= 0.054) return "green"
+    if(quantity <= 0.070) return "yellow"
+    if(quantity <= 0.085) return "orange"
+    if(quantity <= 0.105) return "red"
+    if(quantity <= 0.200) return "purple"
     else return "maroon"
   }
 }
+//Check if there needs to be a unit conversion
+function unitConvert(data, value){
+  var par = data.parameter;
+  var units = data.unit;
+  var quantity = value;
+  if(par == 'pm25' && units != 'µg/m³'){
+    quantity = convert(par, quantity, units);
+  }
+  else if(par == 'pm10' && units != 'µg/m³'){
+    quantity = convert(par, quantity, units);
+  }
+  else if(par == 'co' && units != 'ppm') {
+    quantity = convert(par, quantity, units);
+  }
+  else if(par == 'so2' && units != 'ppb') {
+    quantity = convert(par, quantity, units);
+  }
+  else if(par == 'no2' && units != 'ppb') {
+    quantity = convert(par, quantity, units);
+  }
+  else if(par == 'o3' && units != 'ppm') {
+    quantity = convert(par, quantity, units);
+  }
+  return quantity
+}
 
+//Converts the value if need
+function convert(par, value, from)
+{
+  var factor = [1.96,1.88,1150,2.62];
+/*
+      o3 1ppb = 1.96 µg/m³ => want ppm
+      no2 1 ppb = 1.88 µg/m³ => want ppb
+      co 1 ppm = 1150 µg/m³ => want ppm
+      so2 1ppb = 2.62 µg/m³ => want ppb
+*/
+  if(par == 'o3') {
+    if(from == "µg/m³") {
+//      console.log("Before "+value);
+      value = (value*1000)/factor[0];
+//      console.log("After "+value);
+    }
+    else {
+      console.log("Unchecked parameter unit pair"+par+" "+from);
+    }
+  }
+  else if(par == 'no2') {
+    if(from == "µg/m³") {
+      value = value/factor[1];
+    }
+    else if(from == "ppm"){
+      value = value/1000;
+    }
+    else {
+      console.log("Unchecked parameter unit pair"+par+" "+from);
+    }
+  }
+  else if(par == 'co') {
+    if(from == "µg/m³") {
+      value = value/factor[2];
+    }
+    else {
+      console.log("Unchecked parameter unit pair"+par+" "+from);
+    }
+  }
+  else if(par == 'so2') {
+    if(from == "µg/m³") {
+      value = value/factor[3];
+    }
+    else if(from == "ppm"){
+      value = value/1000;
+    }
+    else {
+      console.log("Unchecked parameter unit pair"+par+" "+from);
+    }
+  }
+  else{
+    console.log("Unknown parameter unit pair"+par+" "+from)
+  }
+  return value;
+}
+
+function correctUnits(parameter)
+{
+  if(parameter == 'pm25' || parameter == 'pm10') return 'µg/m³';
+  else if(parameter == 'co' || parameter =='o3') return 'ppm';
+  else if(parameter == 'so2' || parameter == 'no2') return 'ppb';
+  else{
+    console.log('unknown parameter: '+parameter);
+    return 'µg/m³';
+  }
+}
 //HTTP Request to Nominatim API
 var getDataNominatim = function(requestString, view) {
 
@@ -356,7 +449,7 @@ var getDataNominatim = function(requestString, view) {
     }
   };
 
-  
+
   var url = "https://nominatim.openstreetmap.org/search/" + requestString + "?format=json&limit=1";
   req.open("GET", url, true);
   req.send();
@@ -389,3 +482,16 @@ var getData = function(latitude, longitude, radius, date, view) {
   req.open("GET", url, true);
   req.send();
 };
+
+function openFullscreen(id) {
+  var elem = document.getElementById(id);
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) { /* Firefox */
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+    elem.msRequestFullscreen();
+  }
+}

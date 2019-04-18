@@ -1,25 +1,33 @@
 # Air Quality
 
 ## Todo List
-- Add units parameter to coloring in table (Brandon)
 - Allow either map (along with the location input box) to go fullscreen (Brandon)
 - Update search box location to location name when panning the map (Riley)
-- Implement heatmap visualization overlay 
-- If levels of one or more particle are "Unhealthy for Sensitive Groups" (orange) or higher, add a banner with the AQI descriptor 
+- Implement heatmap visualization overlay
+- If levels of one or more particle are "Unhealthy for Sensitive Groups" (orange) or higher, add a banner with the AQI descriptor
 - Include a legend for the colors
 
 ## Changelog
+April 18, 2019 12:12pm
++ New
+  + Convert values to proper units based on https://uk-air.defra.gov.uk/assets/documents/reports/cat06/0502160851_Conversion_Factors_Between_ppb_and.pdf
+  + Display correct units for each pollutant in table
+  + Display correct values in table and in markers
+  + Add button for full screen uses requestFullscreen()
++ Not working
+  + Unit conversion of o3 is disastrously wrong.
+  + Full screen snaps back to original formatting (probably bootstrap fighting js call)
 April 17, 2019 8:09pm
 + New
   + Added Nominatim functionality to both maps
 + Not working
   + Search box does not update when panning (I haven't added it to the model yet)
-  
+
 April 17, 2019 2:17pm
 + New
   + Fixed marker bugs
   + Added timeouts to limit API requests
-  
+
 April 16, 2019 10:52pm
 + New
   + If multiple markers are in one spot, add all data to it
