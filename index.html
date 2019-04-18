@@ -40,11 +40,12 @@
                   <label for="zoom" class="p-1 m-0">Zoom</label>
                   <input type="text" class="form-control" v-model="map1.zoom" @change="updateMap1()">
                 </div>
-
-                <div class="col pb-1">
-                    <label for="search" class="p-1 m-0">Search</label>
-                    <input type="text" class="form-control" @change="findLocation(map1)">
-                </div>
+                <form  class="form-inline">
+                    <div class="col pb-1">
+                        <label for="search" class="p-1 m-0">Search (Click enter to search)</label>
+                        <input id="map1Search" type="text" class="form-control" @change="findLocation(&quot;map1Search&quot;,&quot;map1&quot;)">
+                    </div>
+                  </form>
               </div>
             </form>
         </div>

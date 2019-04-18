@@ -123,16 +123,12 @@ function updateMap(view){
 
 function findLocation(id, map){
   var x = document.getElementById(id).value;
-  console.log(x);
-  console.log(map);
   var resultString = '';
   var view = '';
   if(map == "map1"){
-    console.log("in if");
     view = app.map1;
   }
   else{
-    console.log("in else");
     view = app.map2;
   }
 
@@ -142,8 +138,11 @@ function findLocation(id, map){
 }
 
 function centerMap(data, view){
-  console.log("data from nom");
-  console.log(data[0].lat);
+  //if Nominatim can't find data for the search, return
+  if(data.length == 0){
+    return;
+  }
+
   view.latitude = data[0].lat;
   view.longitude = data[0].lon;
   updateMap(view);
