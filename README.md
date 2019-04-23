@@ -1,14 +1,19 @@
 # Air Quality
 
 ## Todo List
-- Update search box location to location name when panning the map (Riley)
-- Implement heatmap visualization overlay
+- Implement heatmap visualization overlay (This is kind of working, might have to make do with it)
 - If levels of one or more particle are "Unhealthy for Sensitive Groups" (orange) or higher, add a banner with the AQI descriptor
 - Include a legend for the colors
 - About page
 - Not filtering by value right now, make that work
 
 ## Changelog
+April 23, 2019 4:31pm
++ New
+  + Nominatim location search box updates as you pan
+  + Select based on particle is working (kind of slow, but functioning)
+  + Heat map is implemented (Not functioning great)
+  
 April 22, 2019 8:26pm
 + New
   + Full screen added to both maps, done through toggling css classes (see toggleFullscreen())
