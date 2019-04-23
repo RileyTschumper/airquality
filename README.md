@@ -8,6 +8,13 @@
 - Include a legend for the colors
 
 ## Changelog
+April 22, 2019 8:26pm
++ New
+  + Full screen added to both maps, done through toggling css classes (see toggleFullscreen())
+  + Fix unit conversion issue
++ Not working
+  + FullScreen does not have map fill full window.
+
 April 18, 2019 12:12pm
 + New
   + Convert values to proper units based on https://uk-air.defra.gov.uk/assets/documents/reports/cat06/0502160851_Conversion_Factors_Between_ppb_and.pdf

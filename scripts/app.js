@@ -32,7 +32,7 @@ app = new Vue({
     methods: { /* Any app-specific functions go here */
         initMap() {
           //Initializing First Map
-            this.map1.map = L.map('map', {minZoom: 9, maxZoom: 16}).setView([this.map1.latitude, this.map1.longitude], this.map1.zoom);
+            this.map1.map = L.map('map1', {minZoom: 9, maxZoom: 16}).setView([this.map1.latitude, this.map1.longitude], this.map1.zoom);
             this.map1.tileLayer = L.tileLayer(
                 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
                 {
@@ -382,7 +382,7 @@ function convert(par, value, from)
   if(par == 'o3') {
     if(from == "µg/m³") {
 //      console.log("Before "+value);
-      value = (value*1000)/factor[0];
+      value = value/(1000*factor[0]);
 //      console.log("After "+value);
     }
     else {
@@ -394,7 +394,7 @@ function convert(par, value, from)
       value = value/factor[1];
     }
     else if(from == "ppm"){
-      value = value/1000;
+      value = value*1000;
     }
     else {
       console.log("Unchecked parameter unit pair"+par+" "+from);
@@ -413,7 +413,7 @@ function convert(par, value, from)
       value = value/factor[3];
     }
     else if(from == "ppm"){
-      value = value/1000;
+      value = value*1000;
     }
     else {
       console.log("Unchecked parameter unit pair"+par+" "+from);
@@ -483,15 +483,65 @@ var getData = function(latitude, longitude, radius, date, view) {
   req.send();
 };
 
-function openFullscreen(id) {
-  var elem = document.getElementById(id);
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.mozRequestFullScreen) { /* Firefox */
-    elem.mozRequestFullScreen();
-  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) { /* IE/Edge */
-    elem.msRequestFullscreen();
+// function toggleFullscreen() {
+//   var elem = document.documentElement;
+//   if (elem.requestFullscreen) {
+//     console.log("We request fullscreen on "+elem);
+//     elem.requestFullscreen();
+//   } else if(elem.mozRequestFullScreen) { /* Firefox */
+//     elem.mozRequestFullScreen();
+//   } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+//     console.log("We request fullscreen webkit");
+//     elem.webkitRequestFullscreen();
+//   } else if (elem.msRequestFullscreen) { /* IE/Edge */
+//     elem.msRequestFullscreen();
+//   }
+// }
+
+// function toggleFullscreen() {
+//   let elem = document.documentElement;
+//   if (	document.fullscreenEnabled ||
+// 	document.webkitFullscreenEnabled ||
+// 	document.mozFullScreenEnabled ||
+// 	document.msFullscreenEnabled){
+//     if (!document.fullscreenElement) {
+//       console.log("Requesting full screen");
+//       elem.requestFullscreen().catch(err => {
+//         alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+//       });
+//     } else {
+//       console.log("Exiting full screen");
+//       document.exitFullscreen();
+//     }
+//   }
+//   else {
+//     console.log("fullscreen not enabled");
+//   }
+// //  console.log("Leaving toggle function");
+// }
+
+function toggleFullscreen(id){
+  //var element = document.getElementById(id);
+  var words = id.split('-');
+  var map = '#'+words[0];
+  var idname = '#'+id;
+  var other = '';
+  if(map.indexOf('1') == -1){
+    other = idname.replace('2','1');
+  }else{
+    other = idname.replace('1','2');
   }
+
+  $(idname).toggleClass('fullscreen');
+  $(map).toggleClass('map-fullwidth');
+
+  $(idname.replace('map','table')).toggleClass('hidden');
+  $(other.replace('map','table')).toggleClass('hidden');
+  $(other.replace('-container','')).toggleClass('hidden');
+  console.log("toggled fullscreen of " + idname+" and "+map);
+  console.log("other is "+other);
+
+
+
+
 }
