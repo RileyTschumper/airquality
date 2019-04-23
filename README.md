@@ -1,7 +1,6 @@
 # Air Quality
 
 ## Todo List
-- Allow either map (along with the location input box) to go fullscreen (Brandon)
 - Update search box location to location name when panning the map (Riley)
 - Implement heatmap visualization overlay
 - If levels of one or more particle are "Unhealthy for Sensitive Groups" (orange) or higher, add a banner with the AQI descriptor

@@ -1,52 +1,5 @@
 <!DOCTYPE html>
 <html>
-<<<<<<< HEAD
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Air Quality</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <script
-  type="application/javascript"
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  ></script>
-  <script
-  type="application/javascript"
-  src="https://cdn.jsdelivr.net/npm/vue"
-  ></script>
-  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-  <script type="application/javascript" src="scripts/app.js"></script>
-</head>
-<body onload="Init()">
-  <div id="app">
-    <div class="container-fluid bg-dark font-weight-bold" style="display:block">
-      <div id="map1-container" class="map-container">
-        <!-- The map goes here -->
-        <div id="map1" class="map"></div>
-        <button class="bg-light m-0 mt-1" onclick="toggleFullscreen('map1-container');">Toggle FullScreen</button>
-        <form class="form-horizontal bg-light m-0">
-          <div class="form-group p-1">
-            <div class="d-inline-block pb-1">
-              <label for="lat" class="p-1 m-0">Latitude</label>
-              <input type="text" class="form-control" v-model="map1.latitude" @change="updateMap1()">
-            </div>
-
-            <div class="d-inline-block pb-1">
-              <label for="lng" class="p-1 m-0">Longitude</label>
-              <input type="text" class="form-control" v-model="map1.longitude" @change="updateMap1()">
-            </div>
-
-            <div class="d-inline-block pb-1">
-              <label for="zoom" class="p-1 m-0">Zoom</label>
-              <input type="text" class="form-control" v-model="map1.zoom" @change="updateMap1()">
-            </div>
-            <form  class="form-inline">
-              <div class="pb-1">
-                <label for="search" class="p-1 m-0">Search (Click enter to search)</label>
-                <input id="map1Search" type="text" class="form-control" @change="findLocation(&quot;map1Search&quot;,&quot;map1&quot;)">
-=======
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -71,6 +24,7 @@
         <div id="map1-container" class="map-container">
             <!-- The map goes here -->
             <div id="map" class="map"></div>
+            <button class="bg-light m-0 mt-1" onclick="toggleFullscreen('map1-container');">Toggle FullScreen</button>
             <form class="form-horizontal bg-light m-0 mt-1">
                 <div class="form-group p-1">
                   <div class="col-auto d-inline-block pb-1">
@@ -87,11 +41,6 @@
                     <label for="zoom" class="p-1 m-0">Zoom</label>
                     <input type="text" class="form-control" v-model="map1.zoom" @change="updateMap1()">
                   </div>
-                  <!--
-                  <div class="col-auto d-inline-block pb-1">
-                    <button onclick="openFullscreen('map1-container')">FullScreen</button>
-                  </div>
-                  -->
                   <form  class="form-inline">
                       <div class="col pb-1">
                           <label for="search" class="p-1 m-0">Search (Click enter to search)</label>
@@ -136,7 +85,6 @@
                   <div class="col-auto d-inline-block pb-1">
                       <button onclick="fetchSelectedParticles('map1')">Enter</button>
                   </div>
->>>>>>> 146f8168e2bc7df1fa9261647530d2e2b232c364
               </div>
             </form>
           </div>
