@@ -85,7 +85,12 @@
               <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[6].name" v-model="map1.searchParticles[6].value">
             </div>
             <div class="col-auto d-inline-block pb-1">
-              <button onclick="fetchSelectedParticles('map1')">Enter</button>
+                <label class="p-1 m-0">Date From (YYYY-MM-DD):</label>
+                <input style="width:150px;" class="form-control" type="text" id="map1.dateFrom" v-model="map1.dateFrom" @input="updateMap1()">
+            </div>
+            <div class="col-auto d-inline-block pb-1">
+                <label class="p-1 m-0">Date To (YYYY-MM-DD):</label>
+                <input style="width:150px;" class="form-control" type="text" id="map1.dateTo" v-model="map1.dateTo" @input="updateMap1()">
             </div>
           </div>
         </form>

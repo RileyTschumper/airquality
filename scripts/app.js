@@ -14,7 +14,10 @@ function Init() {
         zoom: 11,
         markers: [],
         aqData: undefined,
+        dateFrom: '',
+        dateTo: '',
         heatmap: false,
+        heatmapLayer: null,
         nominatimLocation: undefined,
         searchParticles: [
           {
@@ -63,7 +66,10 @@ function Init() {
         zoom: 11,
         markers: [],
         aqData: undefined,
+        dateFrom: '',
+        dateTo: '',
         heatmap: false,
+        heatmapLayer: null,
         nominatimLocation: undefined,
         searchParticles: [
           {
@@ -287,6 +293,10 @@ function calculateRadius(map) {
   return radius;
 }
 
+function removeHeatMap(view){
+  view.map.removeLayer(view.heatmapLayer);
+}
+
 function removeMarkers(view) {
   if (view.markers.length == 0) {
     return;
@@ -326,7 +336,7 @@ function addMarkers(data, map, view) {
     ) {
       currTotal = currTotal + results[i].value;
       numReadings = numReadings + 1;
-      console.log("HERE");
+      //console.log("HERE");
       if (isNaN(results[i].value)) {
         console.log("Not a number: " + results[i].value);
       }
@@ -375,9 +385,13 @@ function addMarkers(data, map, view) {
   if (view.heatmap == true) {
     console.log(heatmapArray);
     var heat = L.heatLayer(heatmapArray, {
-      radius: 25,
-      gradient: { 0.1: "blue", 0.3: "lime", 0.6: "red" }
+      radius: 100,
+      minOpacity: .5,
+      gradient: { .1: "green", .3: "yellow", .7: "red" },
+      blur: 10
     }).addTo(view.map);
+
+    view.heatmapLayer = heat;
   }
 }
 
@@ -606,12 +620,22 @@ var getData = function(latitude, longitude, radius, date, view) {
   req.onreadystatechange = function() {
     if (req.readyState == 4 && req.status == 200) {
       //call the addMarkers function with JSON data
-      view.aqData = JSON.parse(req.response);
-      addMarkers(JSON.parse(req.response), view.map, view);
-      updateTable(JSON.parse(req.response), view);
+      if(numberSelected != 0){
+        view.aqData = JSON.parse(req.response);
+        addMarkers(JSON.parse(req.response), view.map, view);
+        updateTable(JSON.parse(req.response), view);
+      }
+      else{
+        removeMarkers(view);
+
+      }
     }
   };
 
+  if(view.heatmapLayer != null){
+    console.log("remove layer");
+    view.map.removeLayer(view.heatmapLayer);
+  }
   var numberSelected = 0;
   var parameterString = "";
 
@@ -629,7 +653,12 @@ var getData = function(latitude, longitude, radius, date, view) {
   if (numberSelected == 1) {
     view.heatmap = true;
   } else {
+    console.log("more than 1 selected");
     view.heatmap = false;
+    if(view.heatmapLayer != null){
+      console.log("remove layer");
+      view.map.removeLayer(view.heatmapLayer);
+    }
   }
 
   console.log(parameterString);
@@ -638,6 +667,22 @@ var getData = function(latitude, longitude, radius, date, view) {
   var order = "&order_by[]=location&order_by[]=parameter";
   //Fetch data for all parameters
   //var parameterString = "parameter[]=pm25&parameter[]=pm10&parameter[]=so2&parameter[]=no2&parameter[]=o3&parameter[]=co&parameter[]=bc";
+
+  var dateString = "&date_from=" + date;
+  console.log("Date From: " + view.dateFrom);
+  if(view.dateFrom == '' && view.dateTo == ''){
+
+  }
+  else if(view.dateFrom == ''){
+    dateString = dateString + "&date_to="  + view.dateTo;
+  }
+  else if(view.dateTo == ''){
+    console.log("HEEEEEEEEEEEEEEERRRRRRRRRRRRR");
+    dateString = "&date_from=" + view.dateFrom;
+  }
+  else{
+    dateString = "&date_from=" + view.dateFrom + "&date_to=" + view.dateTo;
+  }
 
   var url =
     "https://api.openaq.org/v1/measurements?" +
@@ -648,8 +693,7 @@ var getData = function(latitude, longitude, radius, date, view) {
     longitude +
     "&radius=" +
     radius +
-    "&date_from=" +
-    date +
+    dateString +
     order +
     "&limit=10000";
   req.open("GET", url, true);
