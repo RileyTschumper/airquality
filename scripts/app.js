@@ -14,6 +14,7 @@ app = new Vue({
           longitude: -93.18,
           zoom: 11,
           markers: [],
+          heatmap: false,
           nominatimLocation: undefined,
           searchParticles: [{
             particle: 'pm25',
@@ -53,7 +54,37 @@ app = new Vue({
           longitude: 116.41,
           zoom: 11,
           markers: [],
-          checkedParticles: []
+          heatmap: false,
+          nominatimLocation: undefined,
+          searchParticles: [{
+            particle: 'pm25',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'pm10',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'co',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'so2',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'no2',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'o3',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'bc',
+            checked: true,
+            value: undefined
+          }]
         }
     },
     mounted() { /* Code to run when app is mounted */
@@ -254,42 +285,46 @@ function addMarkers(data, map, view){
       console.log("no results for this area");
       return;
     }
-
+    var heatmapArray = [];
     var markerString = '';
     var currTotal = results[0].value;;
     var numReadings = 1;
     //Loops through all readings
     for(var i = 1; i < results.length; i++){
-      //if location and parameter match, keep a running total to calculate an average
-      //This works because we fetched data in order by location and parameter
-      if((results[i].location == results[i-1].location) && (results[i].parameter == results[i-1].parameter)){
-        currTotal = currTotal + results[i].value;
-        numReadings = numReadings + 1;
-        if( isNaN(results[i].value)){
-          console.log("Not a number: " + results[i].value);
-        }
-      }
-      //if location are no longer the same, calculate average and place down marker
-      else if(results[i].location == results[i-1].location){
+          //if location and parameter match, keep a running total to calculate an average
+          //This works because we fetched data in order by location and parameter
+          if((results[i].location == results[i-1].location) && (results[i].parameter == results[i-1].parameter)){
+            //if(view.searchParticles[z].value == undefined || view.searchParticles[z].value < results[i].value){
+              currTotal = currTotal + results[i].value;
+              numReadings = numReadings + 1;
+              console.log("HERE");
+              if( isNaN(results[i].value)){
+                console.log("Not a number: " + results[i].value);
+              }
+            //}
+          }
+          //if parameter are no longer the same, calculate average 
+          else if(results[i].location == results[i-1].location){
+            var average = unitConvert(results[i-1],currTotal/numReadings);
+            markerString = markerString + '<br />' + results[i-1].parameter +" ("+correctUnits(results[i-1].parameter)+")"+": " + average;
+          }
+          //if location are no longer the same, calculate average and place down marker
+          else{
+            var average = unitConvert(results[i-1], currTotal/numReadings);
+            markerString = markerString + '<br />' + results[i-1].parameter +" ("+correctUnits(results[i-1].parameter)+")"+": " + average;
+            var lat = results[i-1].coordinates.latitude;
+            var lng = results[i-1].coordinates.longitude;
+            var newMarker = new L.marker([lat,lng]).addTo(map).bindPopup('<p> Location: ' + results[i-1].location + markerString + '<p>');
+            view.markers.push(newMarker);
+            numReadings = 1;
+            currTotal = results[i].value;
+            markerString = '';
+          }
+    }
 
-        var average = unitConvert(results[i-1],currTotal/numReadings);
-  //      console.log("Location: " + results[i].location + " Parameter: " + results[i].parameter +" Average: " + average);
-        markerString = markerString + '<br />' + results[i-1].parameter +" ("+correctUnits(results[i-1].parameter)+")"+": " + average;
-      }
-      //if location are no longer the same, calculate average and place down marker
-      else{
-        var average = unitConvert(results[i-1], currTotal/numReadings);
-//        console.log("numReadings: " + numReadings);
-        markerString = markerString + '<br />' + results[i-1].parameter +" ("+correctUnits(results[i-1].parameter)+")"+": " + average;
-//        console.log("Location2: " + results[i-1].location + " Parameter: " + results[i-1].parameter + " Average: " + average);
-        var lat = results[i-1].coordinates.latitude;
-        var lng = results[i-1].coordinates.longitude;
-        var newMarker = new L.marker([lat,lng]).addTo(map).bindPopup('<p> Location: ' + results[i-1].location + markerString + '<p>');
-        view.markers.push(newMarker);
-        numReadings = 1;
-        currTotal = results[i].value;
-        markerString = '';
-      }
+    if(view.heatmap == true){
+      var heat = L.heatLayer(heatmapArray, {radius: 25}).addTo(view.map);
+
     }
 }
 
@@ -542,12 +577,31 @@ var getData = function(latitude, longitude, radius, date, view) {
     }
   };
 
+  var numberSelected = 0;
+  var parameterString = '';
+
+  for(var i = 0; i < 7; i++){
+    if(view.searchParticles[i].checked == true){
+      numberSelected++;
+      if(parameterString.length != 0){
+        parameterString = parameterString + "&";
+      }
+      parameterString = parameterString + "parameter[]=" + view.searchParticles[i].particle;
+    }
+  }
+
+  if(numberSelected == 1){
+    view.heatmap = true;
+  }
+
+  console.log(parameterString);
+
   //Orders data by location and parameter, this makes it easier to average the values
   var order = "&order_by[]=location&order_by[]=parameter";
   //Fetch data for all parameters
-  var parameter = "parameter[]=pm25&parameter[]=pm10&parameter[]=so2&parameter[]=no2&parameter[]=o3&parameter[]=co&parameter[]=bc";
+  //var parameterString = "parameter[]=pm25&parameter[]=pm10&parameter[]=so2&parameter[]=no2&parameter[]=o3&parameter[]=co&parameter[]=bc";
 
-  var url = "https://api.openaq.org/v1/measurements?" + parameter + "&coordinates="+latitude+","+longitude+"&radius="+radius+"&date_from="+date+order+"&limit=10000";
+  var url = "https://api.openaq.org/v1/measurements?" + parameterString + "&coordinates="+latitude+","+longitude+"&radius="+radius+"&date_from="+date+order+"&limit=10000";
   req.open("GET", url, true);
   req.send();
 };
