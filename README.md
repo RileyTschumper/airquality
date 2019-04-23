@@ -6,6 +6,7 @@
 - If levels of one or more particle are "Unhealthy for Sensitive Groups" (orange) or higher, add a banner with the AQI descriptor
 - Include a legend for the colors
 - About page
+- Not filtering by value right now, make that work
 
 ## Changelog
 April 22, 2019 8:26pm
