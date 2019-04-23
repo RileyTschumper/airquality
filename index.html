@@ -1,155 +1,154 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Air Quality</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script
-      type="application/javascript"
-      src="https://code.jquery.com/jquery-3.3.1.min.js"
-    ></script>
-    <script
-      type="application/javascript"
-      src="https://cdn.jsdelivr.net/npm/vue"
-    ></script>
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-    <script type="application/javascript" src="scripts/app.js"></script>
-  </head>
-  <body onload="Init()">
-    <div id="app">
-      <div class="row bg-dark font-weight-bold">
-        <div id="map1-container" class="map-container">
-            <!-- The map goes here -->
-            <div id="map" class="map"></div>
-            <button class="bg-light m-0 mt-1" onclick="toggleFullscreen('map1-container');">Toggle FullScreen</button>
-            <form class="form-horizontal bg-light m-0 mt-1">
-                <div class="form-group p-1">
-                  <div class="col-auto d-inline-block pb-1">
-                    <label for="lat" class="p-1 m-0">Latitude</label>
-                    <input type="text" class="form-control" v-model="map1.latitude" @change="updateMap1()">
-                  </div>
-
-                  <div class="col-auto d-inline-block pb-1">
-                    <label for="lng" class="p-1 m-0">Longitude</label>
-                    <input type="text" class="form-control" v-model="map1.longitude" @change="updateMap1()">
-                  </div>
-
-                  <div class="col-auto d-inline-block pb-1">
-                    <label for="zoom" class="p-1 m-0">Zoom</label>
-                    <input type="text" class="form-control" v-model="map1.zoom" @change="updateMap1()">
-                  </div>
-                  <form  class="form-inline">
-                      <div class="col pb-1">
-                          <label for="search" class="p-1 m-0">Search (Click enter to search)</label>
-                          <input id="map1Search" type="text" class="form-control" v-model="map1.nominatimLocation" @change="findLocation(&quot;map1Search&quot;,&quot;map1&quot;)">
-                      </div>
-                  </form>
-                  <div class="col-auto d-inline-block pb-1">
-                    <label class="p-1 m-0">pm25</label>
-                    <input class="form-control" type="checkbox" id="map1.searchParticles[0].name" v-model="map1.searchParticles[0].checked">
-                    <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[0].name" v-model="map1.searchParticles[0].value">
-                  </div>
-                  <div class="col-auto d-inline-block pb-1">
-                    <label class="p-1 m-0">pm10</label>
-                    <input class="form-control" type="checkbox" id="map1.searchParticles[1].name" v-model="map1.searchParticles[1].checked">
-                    <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[1].name" v-model="map1.searchParticles[1].value">
-                  </div>
-                  <div class="col-auto d-inline-block pb-1">
-                    <label class="p-1 m-0">co</label>
-                    <input class="form-control" type="checkbox" id="map1.searchParticles[2].name" v-model="map1.searchParticles[2].checked">
-                    <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[2].name" v-model="map1.searchParticles[2].value">
-                  </div>
-                  <div class="col-auto d-inline-block pb-1">
-                    <label class="p-1 m-0">so2</label>
-                    <input class="form-control" type="checkbox" id="map1.searchParticles[3].name" v-model="map1.searchParticles[3].checked">
-                    <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[3].name" v-model="map1.searchParticles[3].value">
-                  </div>
-                  <div class="col-auto d-inline-block pb-1">
-                    <label class="p-1 m-0">no2</label>
-                    <input class="form-control" type="checkbox" id="map1.searchParticles[4].name" v-model="map1.searchParticles[4].checked">
-                    <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[4].name" v-model="map1.searchParticles[4].value">
-                  </div>
-                  <div class="col-auto d-inline-block pb-1">
-                    <label class="p-1 m-0">o3</label>
-                    <input class="form-control" type="checkbox" id="map1.searchParticles[5].name" v-model="map1.searchParticles[5].checked">
-                    <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[5].name" v-model="map1.searchParticles[5].value">
-                  </div>
-                  <div class="col-auto d-inline-block pb-1">
-                      <label class="p-1 m-0">bc</label>
-                      <input class="form-control" type="checkbox" id="map1.searchParticles[6].name" v-model="map1.searchParticles[6].checked">
-                      <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[6].name" v-model="map1.searchParticles[6].value">
-                    </div>
-                  <div class="col-auto d-inline-block pb-1">
-                      <button onclick="fetchSelectedParticles('map1')">Enter</button>
-                  </div>
-              </div>
-            </form>
-          </div>
-        </form>
-      </div>
-      <div id="map2-container" class="map-container">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Air Quality</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script
+  type="application/javascript"
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  ></script>
+  <script
+  type="application/javascript"
+  src="https://cdn.jsdelivr.net/npm/vue"
+  ></script>
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+  <script type="application/javascript" src="scripts/app.js"></script>
+</head>
+<body onload="Init()">
+  <div id="app">
+    <div class="row bg-dark font-weight-bold m-0">
+      <div id="map1-container" class="map-container">
         <!-- The map goes here -->
-        <div id="map2" class="map"></div>
-        <button class="bg-light m-0 mt-1" onclick="toggleFullscreen('map2-container');">Toggle FullScreen</button>
-        <form class="form-horizontal bg-light m-0">
+        <div id="map1" class="map"></div>
+        <button class="bg-light m-0 mt-1" onclick="toggleFullscreen('map1-container');">Toggle FullScreen</button>
+        <form class="form-horizontal bg-light m-0 mt-1">
           <div class="form-group p-1">
-            <div class="d-inline-block pb-1">
+            <div class="col-auto d-inline-block pb-1">
               <label for="lat" class="p-1 m-0">Latitude</label>
-              <input type="text" class="form-control" v-model="map2.latitude" @change="updateMap2()">
+              <input type="text" class="form-control" v-model="map1.latitude" @change="updateMap1()">
             </div>
 
-            <div class="d-inline-block pb-1">
+            <div class="col-auto d-inline-block pb-1">
               <label for="lng" class="p-1 m-0">Longitude</label>
-              <input type="text" class="form-control" v-model="map2.longitude" @change="updateMap2()">
+              <input type="text" class="form-control" v-model="map1.longitude" @change="updateMap1()">
             </div>
 
-            <div class="d-inline-block pb-1">
+            <div class="col-auto d-inline-block pb-1">
               <label for="zoom" class="p-1 m-0">Zoom</label>
-              <input type="text" class="form-control" v-model="map2.zoom" @change="updateMap2()">
+              <input type="text" class="form-control" v-model="map1.zoom" @change="updateMap1()">
             </div>
             <form  class="form-inline">
-              <div class="pb-1">
+              <div class="col pb-1">
                 <label for="search" class="p-1 m-0">Search (Click enter to search)</label>
-                <input id="map2Search" type="text" class="form-control" @change="findLocation(&quot;map2Search&quot;,&quot;map2&quot;)">
+                <input id="map1Search" type="text" class="form-control" v-model="map1.nominatimLocation" @change="findLocation(&quot;map1Search&quot;,&quot;map1&quot;)">
               </div>
             </form>
+            <div class="col-auto d-inline-block pb-1">
+              <label class="p-1 m-0">pm25</label>
+              <input class="form-control" type="checkbox" id="map1.searchParticles[0].name" v-model="map1.searchParticles[0].checked">
+              <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[0].name" v-model="map1.searchParticles[0].value">
+            </div>
+            <div class="col-auto d-inline-block pb-1">
+              <label class="p-1 m-0">pm10</label>
+              <input class="form-control" type="checkbox" id="map1.searchParticles[1].name" v-model="map1.searchParticles[1].checked">
+              <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[1].name" v-model="map1.searchParticles[1].value">
+            </div>
+            <div class="col-auto d-inline-block pb-1">
+              <label class="p-1 m-0">co</label>
+              <input class="form-control" type="checkbox" id="map1.searchParticles[2].name" v-model="map1.searchParticles[2].checked">
+              <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[2].name" v-model="map1.searchParticles[2].value">
+            </div>
+            <div class="col-auto d-inline-block pb-1">
+              <label class="p-1 m-0">so2</label>
+              <input class="form-control" type="checkbox" id="map1.searchParticles[3].name" v-model="map1.searchParticles[3].checked">
+              <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[3].name" v-model="map1.searchParticles[3].value">
+            </div>
+            <div class="col-auto d-inline-block pb-1">
+              <label class="p-1 m-0">no2</label>
+              <input class="form-control" type="checkbox" id="map1.searchParticles[4].name" v-model="map1.searchParticles[4].checked">
+              <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[4].name" v-model="map1.searchParticles[4].value">
+            </div>
+            <div class="col-auto d-inline-block pb-1">
+              <label class="p-1 m-0">o3</label>
+              <input class="form-control" type="checkbox" id="map1.searchParticles[5].name" v-model="map1.searchParticles[5].checked">
+              <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[5].name" v-model="map1.searchParticles[5].value">
+            </div>
+            <div class="col-auto d-inline-block pb-1">
+              <label class="p-1 m-0">bc</label>
+              <input class="form-control" type="checkbox" id="map1.searchParticles[6].name" v-model="map1.searchParticles[6].checked">
+              <input style="width:70px;" class="form-control" type="text" id="map1.searchParticles[6].name" v-model="map1.searchParticles[6].value">
+            </div>
+            <div class="col-auto d-inline-block pb-1">
+              <button onclick="fetchSelectedParticles('map1')">Enter</button>
+            </div>
           </div>
         </form>
       </div>
-    </div>
+    </form>
+  <div id="map2-container" class="map-container">
+    <!-- The map goes here -->
+    <div id="map2" class="map"></div>
+    <button class="bg-light m-0 mt-1" onclick="toggleFullscreen('map2-container');">Toggle FullScreen</button>
+    <form class="form-horizontal bg-light m-0 mt-1">
+      <div class="form-group p-1">
+        <div class="d-inline-block pb-1">
+          <label for="lat" class="p-1 m-0">Latitude</label>
+          <input type="text" class="form-control" v-model="map2.latitude" @change="updateMap2()">
+        </div>
+
+        <div class="d-inline-block pb-1">
+          <label for="lng" class="p-1 m-0">Longitude</label>
+          <input type="text" class="form-control" v-model="map2.longitude" @change="updateMap2()">
+        </div>
+
+        <div class="d-inline-block pb-1">
+          <label for="zoom" class="p-1 m-0">Zoom</label>
+          <input type="text" class="form-control" v-model="map2.zoom" @change="updateMap2()">
+        </div>
+        <form  class="form-inline">
+          <div class="pb-1">
+            <label for="search" class="p-1 m-0">Search (Click enter to search)</label>
+            <input id="map2Search" type="text" class="form-control" @change="findLocation(&quot;map2Search&quot;,&quot;map2&quot;)">
+          </div>
+        </form>
+      </div>
+    </form>
   </div>
-  <div id="table1-container" class="table-container">
-    <table class="table table-bordered table-dark">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Location</th>
-          <th>Parameter</th>
-          <th>Value</th>
-          <th>Unit</th>
-        </tr>
-      </thead>
-      <tbody id="data-table-body1">
-      </tbody>
-    </table>
-  </div>
-  <div id="table2-container" class = "table-container">
-    <table class="table table-bordered table-dark">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Location</th>
-          <th>Parameter</th>
-          <th>Value</th>
-          <th>Unit</th>
-        </tr>
-      </thead>
-      <tbody id="data-table-body2">
-      </tbody>
-    </table>
-  </div>
+</div>
+</div>
+<div id="table1-container" class="table-container">
+  <table class="table table-bordered table-dark">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Location</th>
+        <th>Parameter</th>
+        <th>Value</th>
+        <th>Unit</th>
+      </tr>
+    </thead>
+    <tbody id="data-table-body1">
+    </tbody>
+  </table>
+</div>
+<div id="table2-container" class = "table-container">
+  <table class="table table-bordered table-dark">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Location</th>
+        <th>Parameter</th>
+        <th>Value</th>
+        <th>Unit</th>
+      </tr>
+    </thead>
+    <tbody id="data-table-body2">
+    </tbody>
+  </table>
+</div>
 </body>
 </html>
