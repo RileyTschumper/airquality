@@ -13,7 +13,37 @@ app = new Vue({
           latitude: 44.94,
           longitude: -93.18,
           zoom: 11,
-          markers: []
+          markers: [],
+          nominatimLocation: undefined,
+          searchParticles: [{
+            particle: 'pm25',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'pm10',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'co',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'so2',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'no2',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'o3',
+            checked: true,
+            value: undefined
+          }, {
+            particle: 'bc',
+            checked: true,
+            value: undefined
+          }]
         },
         map2:{
           index: 2,
@@ -22,7 +52,8 @@ app = new Vue({
           latitude: 39.90,
           longitude: 116.41,
           zoom: 11,
-          markers: []
+          markers: [],
+          checkedParticles: []
         }
     },
     mounted() { /* Code to run when app is mounted */
@@ -42,6 +73,7 @@ app = new Vue({
               );
               this.map1.tileLayer.addTo(this.map1.map);
               updateMarkers(this.map1);
+              getDataNominatimCoords(this.map1);
 
             this.map1.map.on("move", ()=>{
                 updateCenterMap(this.map1);
@@ -53,6 +85,7 @@ app = new Vue({
               }
               timeout = setTimeout(()=>{
                 updateMarkers(this.map1);
+                getDataNominatimCoords(this.map1);
                 timeout = null;
               }, 2000);
             });
@@ -62,6 +95,7 @@ app = new Vue({
               }
               timeout = setTimeout(()=>{
                 updateMarkers(this.map1);
+                getDataNominatimCoords(this.map1);
                 timeout = null;
               }, 2000);
             });
@@ -77,6 +111,7 @@ app = new Vue({
               );
               this.map2.tileLayer.addTo(this.map2.map);
               updateMarkers(this.map2);
+              //getDataNominatimCoords(this.map2);
 
             this.map2.map.on("move", ()=>{
                 updateCenterMap(this.map2);
@@ -114,6 +149,17 @@ app = new Vue({
   });//VUE app
 
 }//Init()
+
+function fetchSelectedParticles(mapNumber){
+  var view;
+  if(mapNumber == "map1"){
+    view = app.map1;
+  }
+  else{
+    view = app.map2;
+  }
+  updateMarkers(view);
+}
 
 function updateMap(view){
   view.map.setView([view.latitude, view.longitude], view.zoom);
@@ -454,6 +500,29 @@ var getDataNominatim = function(requestString, view) {
   req.open("GET", url, true);
   req.send();
 };
+
+var getDataNominatimCoords = function(view){
+  var req = new XMLHttpRequest();
+
+  req.onreadystatechange = function() {
+    if (req.readyState == 4 && req.status == 200) {
+      //call the addMarkers function with JSON data
+      //addMarkers(JSON.parse(req.response),view.map, view);
+      //updateTable(JSON.parse(req.response),view);
+      getNominatimDisplay(JSON.parse(req.response), view);
+    }
+  };
+
+
+  var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + view.latitude + "&lon=" + view.longitude + "&zoom=11";
+  req.open("GET", url, true);
+  req.send();
+};
+
+function getNominatimDisplay(data, view){
+  view.nominatimLocation = data.display_name;
+  console.log(data.display_name);
+}
 
 //HTTP Request to Open AQ API
 var getData = function(latitude, longitude, radius, date, view) {
