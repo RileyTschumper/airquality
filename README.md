@@ -5,6 +5,7 @@
 - Implement heatmap visualization overlay
 - If levels of one or more particle are "Unhealthy for Sensitive Groups" (orange) or higher, add a banner with the AQI descriptor
 - Include a legend for the colors
+- About page
 
 ## Changelog
 April 22, 2019 8:26pm
