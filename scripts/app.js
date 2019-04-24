@@ -177,7 +177,7 @@ function Init() {
         );
         this.map2.tileLayer.addTo(this.map2.map);
         updateMarkers(this.map2);
-        //getDataNominatimCoords(this.map2);
+        getDataNominatimCoords(this.map2);
 
         this.map2.map.on("move", () => {
           updateCenterMap(this.map2);
