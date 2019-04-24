@@ -326,7 +326,7 @@ function addMarkers(data, map, view) {
   }
   var heatmapArray = [];
   var markerString = "";
-  var currTotal = results[0].value;
+  var currTotal = unitConvert(results[0],results[0].value);
   var numReadings = 1;
   //Loops through all readings
   for (var i = 1; i < results.length; i++) {
@@ -336,7 +336,8 @@ function addMarkers(data, map, view) {
       results[i].location == results[i - 1].location &&
       results[i].parameter == results[i - 1].parameter
     ) {
-      currTotal = currTotal + results[i].value;
+      console.log("Current Total for "+ results[i-1].parameter+ " is "+currTotal);
+      currTotal = currTotal + unitConvert(results[i],results[i].value);
       numReadings = numReadings + 1;
       //console.log("HERE");
       if (isNaN(results[i].value)) {
@@ -345,7 +346,9 @@ function addMarkers(data, map, view) {
     }
     //if parameter are no longer the same, calculate average
     else if (results[i].location == results[i - 1].location) {
-      var average = unitConvert(results[i - 1], currTotal / numReadings);
+      //var startavg = currTotal/numReadings;
+      var average = currTotal/numReadings;//unitConvert(results[i - 1],startavg);
+      //console.log("Current total is "+currTotal+" with "+ numReadings + " readings");
       markerString =
         markerString +
         "<br />" +
@@ -356,10 +359,16 @@ function addMarkers(data, map, view) {
         ": " +
         average;
         addBannerData(results[i-1],average,view);
+        //RESET AVERAGE HERE
+        numReadings = 1;
+        currTotal = unitConvert(results[i],results[i].value);
+        markerString = "";
     }
     //if location are no longer the same, calculate average and place down marker
     else {
-      var average = unitConvert(results[i - 1], currTotal / numReadings);
+      //var startavg = currTotal/numReadings;
+      var average = currTotal/numReadings;//unitConvert(results[i - 1],startavg);
+      //console.log("Current total is "+currTotal+" with "+ numReadings + " readings");
       markerString =
         markerString +
         "<br />" +
@@ -381,7 +390,7 @@ function addMarkers(data, map, view) {
       var lessThanOne = average * 0.1;
       heatmapArray.push([lat, lng, lessThanOne]);
       numReadings = 1;
-      currTotal = results[i].value;
+      currTotal = unitConvert(results[i],results[i].value);
       markerString = "";
     }
   }
@@ -525,17 +534,18 @@ function convert(par, value, from) {
       co 1 ppm = 1150 µg/m³ => want ppm
       so2 1ppb = 2.62 µg/m³ => want ppb
 */
+//  console.log("Parameter: "+par+", From: "+from+ ", Val: "+value);
   if (par == "o3") {
     if (from == "µg/m³") {
       //      console.log("Before "+value);
-      value = value / (1000 * factor[0]);
+      value = value / (1000 * 1.96);
       //      console.log("After "+value);
     } else {
       console.log("Unchecked parameter unit pair" + par + " " + from);
     }
   } else if (par == "no2") {
     if (from == "µg/m³") {
-      value = value / factor[1];
+      value = value / 1.88;
     } else if (from == "ppm") {
       value = value * 1000;
     } else {
@@ -543,13 +553,13 @@ function convert(par, value, from) {
     }
   } else if (par == "co") {
     if (from == "µg/m³") {
-      value = value / factor[2];
+      value = value / 1150;
     } else {
       console.log("Unchecked parameter unit pair" + par + " " + from);
     }
   } else if (par == "so2") {
     if (from == "µg/m³") {
-      value = value / factor[3];
+      value = value / 2.62;
     } else if (from == "ppm") {
       value = value * 1000;
     } else {
@@ -558,6 +568,7 @@ function convert(par, value, from) {
   } else {
     console.log("Unknown parameter unit pair" + par + " " + from);
   }
+//  console.log("New Value: "+value);
   return value;
 }
 
@@ -734,16 +745,18 @@ function toggleFullscreen(id) {
 
 function addBannerData(data,average,view){
   var color = getColor(data,average);
+  console.log("Parameter: "+data.parameter+", Average: "+average+", Color: "+color)
+  var val = colorIndex(color);
   var obj = {
     parameter: data.parameter,
     color: color,
-    index: colorIndex(color),
+    index: val,
     location: data.location
     };
 //  console.log(obj);
   if(color == 'orange'||color == 'red'||color == 'purple'||color == 'maroon')
   {
-    console.log("Adding "+ color + " to banner"+view.index+" array with parameter of "+data.parameter);
+    console.log("@"+data.location+" adding "+ color + " to banner"+view.index+" array with parameter of "+data.parameter+" and value of "+average);
     view.bannerData.push(obj);
   }
 }
