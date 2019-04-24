@@ -311,6 +311,7 @@ function removeMarkers(view) {
 
 //Adding markers to the map.
 function addMarkers(data, map, view) {
+  
   console.log("JSON data recieved");
   var results = data.results;
   console.log(results);
@@ -636,6 +637,9 @@ var getData = function(latitude, longitude, radius, date, view) {
   console.log("getData radius " + radius);
   console.log("getData date " + date);
 
+  document.getElementById('map'+view.index+'-banner').innerHTML = '';
+  view.bannerData = [];
+
   var req = new XMLHttpRequest();
 
   req.onreadystatechange = function() {
@@ -690,7 +694,6 @@ var getData = function(latitude, longitude, radius, date, view) {
   //var parameterString = "parameter[]=pm25&parameter[]=pm10&parameter[]=so2&parameter[]=no2&parameter[]=o3&parameter[]=co&parameter[]=bc";
 
   var dateString = "&date_from=" + date;
-  console.log("Date From: " + view.dateFrom);
   if(view.dateFrom == '' && view.dateTo == ''){
 
   }
@@ -698,7 +701,6 @@ var getData = function(latitude, longitude, radius, date, view) {
     dateString = dateString + "&date_to="  + view.dateTo;
   }
   else if(view.dateTo == ''){
-    console.log("HEEEEEEEEEEEEEEERRRRRRRRRRRRR");
     dateString = "&date_from=" + view.dateFrom;
   }
   else{
@@ -770,6 +772,7 @@ function colorIndex(color)
 }
 
 function addBannertoView(view){
+  document.getElementById('map'+view.index+'-banner').innerHTML = '';
   var colors =['orange','red','purple','maroon'];
   var descripts = ['Unhealthy for Sensitive Groups','Unhealthy','Very Unhealthy','Hazardous'];
   var banner = view.bannerData.sort(compare);
