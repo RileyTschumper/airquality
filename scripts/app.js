@@ -55,7 +55,8 @@ function Init() {
             checked: true,
             value: undefined
           }
-        ]
+        ],
+        bannerData:[]
       },
       map2: {
         index: 2,
@@ -107,7 +108,8 @@ function Init() {
             checked: true,
             value: undefined
           }
-        ]
+        ],
+        bannerData:[]
       }
     },
     mounted() {
@@ -353,6 +355,7 @@ function addMarkers(data, map, view) {
         ")" +
         ": " +
         average;
+        addBannerData(results[i-1],average,view);
     }
     //if location are no longer the same, calculate average and place down marker
     else {
@@ -366,6 +369,7 @@ function addMarkers(data, map, view) {
         ")" +
         ": " +
         average;
+      addBannerData(results[i-1],average,view);
       var lat = results[i - 1].coordinates.latitude;
       var lng = results[i - 1].coordinates.longitude;
       var newMarker = new L.marker([lat, lng])
@@ -381,7 +385,13 @@ function addMarkers(data, map, view) {
       markerString = "";
     }
   }
-
+  if(view.bannerData.length > 0){
+    console.log(view.bannerData);
+    addBannertoView(view);
+  }
+  else{
+    console.log("EVERYTHING GOOD HERE");
+  }
   if (view.heatmap == true) {
     console.log(heatmapArray);
     var heat = L.heatLayer(heatmapArray, {
@@ -426,7 +436,7 @@ function updateTable(data, view) {
 
     td = document.createElement("td");
     td.innerHTML = quantity.toPrecision(3);
-    td.style.backgroundColor = color;
+    td.classList.add(color);
     td.style.color = "black";
     tr.appendChild(td);
 
@@ -700,43 +710,6 @@ var getData = function(latitude, longitude, radius, date, view) {
   req.send();
 };
 
-// function toggleFullscreen() {
-//   var elem = document.documentElement;
-//   if (elem.requestFullscreen) {
-//     console.log("We request fullscreen on "+elem);
-//     elem.requestFullscreen();
-//   } else if(elem.mozRequestFullScreen) { /* Firefox */
-//     elem.mozRequestFullScreen();
-//   } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-//     console.log("We request fullscreen webkit");
-//     elem.webkitRequestFullscreen();
-//   } else if (elem.msRequestFullscreen) { /* IE/Edge */
-//     elem.msRequestFullscreen();
-//   }
-// }
-
-// function toggleFullscreen() {
-//   let elem = document.documentElement;
-//   if (	document.fullscreenEnabled ||
-// 	document.webkitFullscreenEnabled ||
-// 	document.mozFullScreenEnabled ||
-// 	document.msFullscreenEnabled){
-//     if (!document.fullscreenElement) {
-//       console.log("Requesting full screen");
-//       elem.requestFullscreen().catch(err => {
-//         alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-//       });
-//     } else {
-//       console.log("Exiting full screen");
-//       document.exitFullscreen();
-//     }
-//   }
-//   else {
-//     console.log("fullscreen not enabled");
-//   }
-// //  console.log("Leaving toggle function");
-// }
-
 function toggleFullscreen(id) {
   //var element = document.getElementById(id);
   var words = id.split("-");
@@ -752,9 +725,71 @@ function toggleFullscreen(id) {
   $(idname).toggleClass("fullscreen");
   $(map).toggleClass("map-fullwidth");
 
-  $(idname.replace("map", "table")).toggleClass("hidden");
-  $(other.replace("map", "table")).toggleClass("hidden");
-  $(other.replace("-container", "")).toggleClass("hidden");
+  $(idname.replace("map", "table")).toggleClass("hidden");//associated table
+  $(other.replace("map", "table")).toggleClass("hidden");//other table
+  $(other).toggleClass("hidden");//other container
   console.log("toggled fullscreen of " + idname + " and " + map);
   console.log("other is " + other);
+}
+
+function addBannerData(data,average,view){
+  var color = getColor(data,average);
+  var obj = {
+    parameter: data.parameter,
+    color: color,
+    index: colorIndex(color),
+    location: data.location
+    };
+//  console.log(obj);
+  if(color == 'orange'||color == 'red'||color == 'purple'||color == 'maroon')
+  {
+    console.log("Adding "+ color + " to banner"+view.index+" array with parameter of "+data.parameter);
+    view.bannerData.push(obj);
+  }
+}
+function colorIndex(color)
+{
+  if (color == "orange") return 0;
+  if (color == "red") return 1;
+  if (color == "purple") return 2;
+  if (color == "maroon") return 3;
+  else return -1;
+}
+
+function addBannertoView(view){
+  var colors =['orange','red','purple','maroon'];
+  var descripts = ['Unhealthy for Sensitive Groups','Unhealthy','Very Unhealthy','Hazardous'];
+  var banner = view.bannerData.sort(compare);
+  var value = banner[0].index;
+  console.log('map'+view.index+'-banner');
+  var table = document.getElementById('map'+view.index+'-banner');
+  var tr;
+  for(var i = 1; i < banner.length; i++){
+    if(banner[i-1].parameter == banner[i].parameter)
+    {
+      value = Math.max(banner[i-1].index,banner[i].index);
+    }
+    else{
+      tr = document.createElement("tr");
+      tr.classList.add(colors[value]);
+      tr.innerHTML = "Levels of "+banner[i-1].parameter+" is: "+descripts[value];
+      table.appendChild(tr);
+//        console.log(tr.innerHTML);
+      value = banner[i].index;
+    }
+  }
+  tr = document.createElement("tr");
+  tr.classList.add(colors[value]);
+  tr.innerHTML = "Levels of "+banner[i-1].parameter+" is: "+descripts[value];
+//  console.log(tr.innerHTML);
+  table.appendChild(tr);
+}
+function compare( a, b ) {
+  if ( a.parameter < b.parameter ){
+    return -1;
+  }
+  if ( a.parameter > b.parameter ){
+    return 1;
+  }
+  return 0;
 }

@@ -22,11 +22,25 @@
 
 </head>
 <body onload="Init()">
+  <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    <a class="navbar-brand" href="index.html">Air Quality</a>
+    <!-- Links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link active" href="index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="about.html">About</a>
+      </li>
+    </ul>
+  </nav>
   <div id="app">
     <div class="row bg-dark font-weight-bold m-0">
       <div id="map1-container" class="map-container">
+
         <!-- The map goes here -->
         <div id="map1" class="map"></div>
+        <table id = "map1-banner" class="banner"></table>
         <button class="bg-light m-0 mt-1" onclick="toggleFullscreen('map1-container');">Toggle FullScreen</button>
         <form class="form-horizontal bg-light m-0 mt-1">
           <div class="form-group p-1">
@@ -100,6 +114,7 @@
   <div id="map2-container" class="map-container">
     <!-- The map goes here -->
     <div id="map2" class="map"></div>
+    <table id = "map2-banner" class="banner"></table>
     <button class="bg-light m-0 mt-1" onclick="toggleFullscreen('map2-container');">Toggle FullScreen</button>
     <form class="form-horizontal bg-light m-0 mt-1">
       <div class="form-group p-1">
@@ -127,6 +142,45 @@
     </form>
   </div>
 </div>
+</div>
+<div id="table-legend" class="table-bordered table-dark">
+  <table>
+    <thead colspan="2">
+      <tr>
+        <td>Table Color Legend</td>
+      </tr>
+      <tr>
+        <td>Color</td>
+        <td>Description</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="green">Green</td>
+        <td>Good</td>
+      </tr>
+      <tr>
+        <td class="yellow">Yellow</td>
+        <td>Moderate</td>
+      </tr>
+      <tr>
+        <td class="orange">Orange</td>
+        <td>Unhealty for Sensitive Groups</td>
+      </tr>
+      <tr>
+        <td class="red">Red</td>
+        <td>Unhealthy</td>
+      </tr>
+      <tr>
+        <td class="purple">Purple</td>
+        <td>Very Unhealthy</td>
+      </tr>
+      <tr>
+        <td class="maroon">Maroon</td>
+        <td>Hazardous</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 <div id="table1-container" class="table-container">
   <table class="table table-bordered table-dark">
