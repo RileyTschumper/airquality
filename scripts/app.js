@@ -220,10 +220,8 @@ function Init() {
 
 function fetchSelectedParticles(mapNumber) {
   var view;
-  console.log("YYAAAAAAAAAAAAAAAA");
   if (mapNumber == "map1") {
     view = app.map1;
-    console.log("in map1");
   } else {
     view = app.map2;
   }
@@ -245,7 +243,6 @@ function findLocation(id, map) {
   }
 
   resultString = x.split(" ").join("%20");
-  console.log(resultString);
   getDataNominatim(resultString, view);
 }
 
@@ -267,7 +264,6 @@ function updateCenterMap(view) {
 }
 
 function updateMarkers(view) {
-  console.log("lat in view: " + view.latitude);
   //gets the date 30 prior to today
   var dateObj = new Date(new Date().setDate(new Date().getDate() - 30));
   var month = dateObj.getUTCMonth() + 1; //months from 1-12
@@ -291,7 +287,6 @@ function calculateRadius(map) {
   var southWest = map.getBounds().getSouthWest();
   radius = southWest.distanceTo(northEast) / 2.0;
 
-  console.log("Radius: " + radius);
   return radius;
 }
 
@@ -315,14 +310,12 @@ function addMarkers(data, map, view) {
   console.log("JSON data recieved");
   var results = data.results;
   console.log(results);
-  //console.log(map);
 
   //removes old markers from the map
   removeMarkers(view);
 
   //if no results for the area.
   if (results.length == 0) {
-    console.log("no results for this area");
     return;
   }
   var heatmapArray = [];
@@ -337,19 +330,13 @@ function addMarkers(data, map, view) {
       results[i].location == results[i - 1].location &&
       results[i].parameter == results[i - 1].parameter
     ) {
-      console.log("Current Total for "+ results[i-1].parameter+ " is "+currTotal);
       currTotal = currTotal + unitConvert(results[i],results[i].value);
       numReadings = numReadings + 1;
-      //console.log("HERE");
-      if (isNaN(results[i].value)) {
-        console.log("Not a number: " + results[i].value);
-      }
     }
     //if parameter are no longer the same, calculate average
     else if (results[i].location == results[i - 1].location) {
       //var startavg = currTotal/numReadings;
       var average = currTotal/numReadings;//unitConvert(results[i - 1],startavg);
-      //console.log("Current total is "+currTotal+" with "+ numReadings + " readings");
       markerString =
         markerString +
         "<br />" +
@@ -369,7 +356,6 @@ function addMarkers(data, map, view) {
     else {
       //var startavg = currTotal/numReadings;
       var average = currTotal/numReadings;//unitConvert(results[i - 1],startavg);
-      //console.log("Current total is "+currTotal+" with "+ numReadings + " readings");
       markerString =
         markerString +
         "<br />" +
@@ -396,14 +382,12 @@ function addMarkers(data, map, view) {
     }
   }
   if(view.bannerData.length > 0){
-    console.log(view.bannerData);
     addBannertoView(view);
   }
   else{
-    console.log("EVERYTHING GOOD HERE");
+
   }
   if (view.heatmap == true) {
-    console.log(heatmapArray);
     var heat = L.heatLayer(heatmapArray, {
       radius: 100,
       minOpacity: .5,
@@ -418,7 +402,6 @@ function addMarkers(data, map, view) {
 function updateTable(data, view) {
   var results = data.results;
   var tableID = "data-table-body" + view.index;
-  console.log(tableID);
 
   //clear table
   document.getElementById(tableID).innerHTML = "";
@@ -460,7 +443,6 @@ function updateTable(data, view) {
 
 //Need to check units
 function getColor(data, quantity) {
-  //  console.log(data.parameter+" calculated: "+quantity+", value: "+data.value);
   if (data.parameter == "pm25") {
     if (quantity <= 12.0) return "green";
     if (quantity <= 35.4) return "yellow";
@@ -535,12 +517,10 @@ function convert(par, value, from) {
       co 1 ppm = 1150 µg/m³ => want ppm
       so2 1ppb = 2.62 µg/m³ => want ppb
 */
-//  console.log("Parameter: "+par+", From: "+from+ ", Val: "+value);
+
   if (par == "o3") {
     if (from == "µg/m³") {
-      //      console.log("Before "+value);
       value = value / (1000 * 1.96);
-      //      console.log("After "+value);
     } else {
       console.log("Unchecked parameter unit pair" + par + " " + from);
     }
@@ -569,7 +549,6 @@ function convert(par, value, from) {
   } else {
     console.log("Unknown parameter unit pair" + par + " " + from);
   }
-//  console.log("New Value: "+value);
   return value;
 }
 
@@ -627,15 +606,10 @@ var getDataNominatimCoords = function(view) {
 
 function getNominatimDisplay(data, view) {
   view.nominatimLocation = data.display_name;
-  console.log(data.display_name);
 }
 
 //HTTP Request to Open AQ API
 var getData = function(latitude, longitude, radius, date, view) {
-  console.log("getData lat " + latitude);
-  console.log("getData long " + longitude);
-  console.log("getData radius " + radius);
-  console.log("getData date " + date);
 
   document.getElementById('map'+view.index+'-banner').innerHTML = '';
   view.bannerData = [];
@@ -658,7 +632,6 @@ var getData = function(latitude, longitude, radius, date, view) {
   };
 
   if(view.heatmapLayer != null){
-    console.log("remove layer");
     view.map.removeLayer(view.heatmapLayer);
   }
   var numberSelected = 0;
@@ -678,15 +651,11 @@ var getData = function(latitude, longitude, radius, date, view) {
   if (numberSelected == 1) {
     view.heatmap = true;
   } else {
-    console.log("more than 1 selected");
     view.heatmap = false;
     if(view.heatmapLayer != null){
-      console.log("remove layer");
       view.map.removeLayer(view.heatmapLayer);
     }
   }
-
-  console.log(parameterString);
 
   //Orders data by location and parameter, this makes it easier to average the values
   var order = "&order_by[]=location&order_by[]=parameter";
@@ -741,13 +710,11 @@ function toggleFullscreen(id) {
   $(idname.replace("map", "table")).toggleClass("hidden");//associated table
   $(other.replace("map", "table")).toggleClass("hidden");//other table
   $(other).toggleClass("hidden");//other container
-  console.log("toggled fullscreen of " + idname + " and " + map);
-  console.log("other is " + other);
+
 }
 
 function addBannerData(data,average,view){
   var color = getColor(data,average);
-  console.log("Parameter: "+data.parameter+", Average: "+average+", Color: "+color)
   var val = colorIndex(color);
   var obj = {
     parameter: data.parameter,
@@ -755,10 +722,8 @@ function addBannerData(data,average,view){
     index: val,
     location: data.location
     };
-//  console.log(obj);
   if(color == 'orange'||color == 'red'||color == 'purple'||color == 'maroon')
   {
-    console.log("@"+data.location+" adding "+ color + " to banner"+view.index+" array with parameter of "+data.parameter+" and value of "+average);
     view.bannerData.push(obj);
   }
 }
@@ -777,7 +742,6 @@ function addBannertoView(view){
   var descripts = ['Unhealthy for Sensitive Groups','Unhealthy','Very Unhealthy','Hazardous'];
   var banner = view.bannerData.sort(compare);
   var value = banner[0].index;
-  console.log('map'+view.index+'-banner');
   var table = document.getElementById('map'+view.index+'-banner');
   var tr;
   for(var i = 1; i < banner.length; i++){
@@ -790,14 +754,13 @@ function addBannertoView(view){
       tr.classList.add(colors[value]);
       tr.innerHTML = "Levels of "+banner[i-1].parameter+" is: "+descripts[value];
       table.appendChild(tr);
-//        console.log(tr.innerHTML);
+
       value = banner[i].index;
     }
   }
   tr = document.createElement("tr");
   tr.classList.add(colors[value]);
   tr.innerHTML = "Levels of "+banner[i-1].parameter+" is: "+descripts[value];
-//  console.log(tr.innerHTML);
   table.appendChild(tr);
 }
 function compare( a, b ) {
