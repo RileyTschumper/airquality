@@ -210,7 +210,7 @@ function Init() {
       },
       updateMap2() {
         this.map2.map.setView(
-          [this.map2.latitude, this.map2.longitute],
+          [this.map2.latitude, this.map2.longitude],
           this.map2.zoom
         );
       }
@@ -306,7 +306,7 @@ function removeMarkers(view) {
 
 //Adding markers to the map.
 function addMarkers(data, map, view) {
-  
+
   console.log("JSON data recieved");
   var results = data.results;
   console.log(results);
